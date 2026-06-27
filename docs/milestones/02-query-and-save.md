@@ -1,6 +1,8 @@
 # Query and Save Milestone
 
-This document defines the next implementation milestone after the first Composite skeleton.
+This document defines the second implementation milestone after the first Composite skeleton.
+
+Status: completed.
 
 Read this together with:
 

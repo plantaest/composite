@@ -15,5 +15,6 @@ When documentation files disagree, use this authority order:
 
 1. Source code and tests.
 2. The active milestone in `docs/milestones/`.
-3. Standing policy documents.
-4. Roadmap documents.
+3. Accepted decision records in `docs/decisions/`.
+4. Standing policy documents.
+5. Roadmap documents.

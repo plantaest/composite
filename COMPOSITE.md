@@ -20,7 +20,7 @@ wiki.search(query, options)
 wiki.sparqlQuery(query, endpoint)
 
 page.text()
-page.save(text, summary, options)
+page.save(text, summary?, options?)
 page.edit(transform, config)
 page.history(props, limit, options)
 page.categories()
@@ -115,11 +115,11 @@ Application code intended to work across runtimes should depend on the core `Wik
 
 Runtime-specific code should live at application boundaries.
 
-### 9. Keep the first implementation small
+### 9. Keep implementation slices small
 
-Do not implement broad MediaWiki coverage in the first milestone.
+Do not implement broad MediaWiki coverage in one milestone.
 
-Start with:
+The foundation milestone started with:
 
 - core interfaces;
 - runtime entry points;
@@ -138,3 +138,9 @@ Add features one capability at a time. Each slice should include:
 - implementation for supported runtimes;
 - tests for adapter mapping and shared contract;
 - documentation update if public API changes.
+
+### 11. Record important decisions
+
+Use `docs/decisions/` for design choices that affect public API shape, runtime behavior, package boundaries, testing strategy, or future development direction.
+
+Decision records should stay lightweight. They should explain why the choice was made, not duplicate the full implementation or milestone spec.

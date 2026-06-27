@@ -2,6 +2,8 @@
 
 This document defines the first implementation milestone for the rebuilt Composite repository.
 
+Status: completed.
+
 The goal is to establish the architecture, public import paths, core interfaces, minimal runtime entry points, and first shared capability.
 
 Do not implement broad MediaWiki coverage in this milestone.

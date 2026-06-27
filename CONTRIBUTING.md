@@ -118,6 +118,7 @@ Before adding or changing a public API, check:
 - `docs/api-policy.md`
 - `docs/runtime-support.md`
 - `docs/api-mapping.md`
+- `docs/decisions/`
 - the active milestone in `docs/milestones/`
 
 For each public API change:
@@ -128,6 +129,7 @@ For each public API change:
 - add or update contract tests;
 - add adapter tests with fake runtime objects;
 - update documentation if the public surface changes.
+- add or update a decision record when the reason for the choice would not be obvious later.
 
 Unsupported runtime behavior should fail explicitly, usually with `UnsupportedRuntimeError`.
 
@@ -142,6 +144,7 @@ The docs have different roles:
 - `docs/runtime-support.md`: runtime availability matrix.
 - `docs/imports-and-bundling.md`: package boundary and bundle policy.
 - `docs/testing-strategy.md`: testing layers and expectations.
+- `docs/decisions/`: accepted design decisions and their rationale.
 - `docs/capabilities.md`: long-term capability roadmap.
 - `docs/api-mapping.md`: provisional runtime adapter mapping.
 - `docs/milestones/`: active milestone scope.
