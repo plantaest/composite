@@ -298,28 +298,35 @@ This milestone is defined by `docs/milestones/02-query-and-save.md`.
 - Mock page save behavior in `/testing`.
 - Adapter and contract tests for query and save.
 
-## Milestone 3: page read expansion and user basics
+## Milestone 3: page read basics
+
+This milestone is defined by `docs/milestones/03-page-read-basics.md`.
 
 - `page.info()`.
 - `page.exists()`.
-- `page.history(...)`.
 - `page.categories()`.
 - `page.templates()`.
 - `page.links()`.
+
+## Milestone 4: history, discovery, and user basics
+
+- `page.history(...)`.
+- `page.historyGen(...)`.
 - `wiki.search(...)`.
 - `wiki.userinfo()`.
+- `wiki.currentUser()`.
+- `user.info()`.
+- `user.contribs(...)`.
 
-## Milestone 4: editing and user workflows
+## Milestone 5: editing and review workflows
 
 - `page.edit(...)`.
 - `wiki.getToken(...)` or adapter-internal token policy.
-- `user.info()`.
-- `user.contribs(...)`.
 - `wiki.recentChanges(...)`.
 - `wiki.compareRevisions(...)`.
 - `wiki.patrol(...)`.
 
-## Milestone 5: extended runtime capabilities
+## Milestone 6: extended runtime capabilities
 
 - continuation/generator helpers.
 - `wiki.sparqlQuery(...)`.
@@ -328,7 +335,7 @@ This milestone is defined by `docs/milestones/02-query-and-save.md`.
 - watchlist and watch/unwatch.
 - request reliability policy.
 
-## Milestone 6: specialized domains
+## Milestone 7: specialized domains
 
 - EventStreams.
 - Parsoid advanced operations.

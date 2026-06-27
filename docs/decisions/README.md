@@ -45,3 +45,4 @@ What this enables, limits, or postpones.
 - `0010-use-mock-runtime-and-adapter-contract-tests.md`
 - `0011-use-types-mediawiki-at-mw-boundaries.md`
 - `0012-record-lightweight-sdd-decisions-in-repo.md`
+- `0013-split-page-read-basics-from-broader-third-milestone.md`

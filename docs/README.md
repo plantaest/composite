@@ -28,6 +28,7 @@ This process should stay lightweight. Do not create decision records for every s
 
 - `milestones/01-foundation.md`: completed foundation milestone.
 - `milestones/02-query-and-save.md`: completed query and save milestone.
+- `milestones/03-page-read-basics.md`: planned page read basics milestone.
 
 ## Standing policy
 

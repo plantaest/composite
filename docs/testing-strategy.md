@@ -224,3 +224,34 @@ Contract:
 - mock page.save()
 - mock page.save() updates stored page text
 ```
+
+### Page read basics tests
+
+The page read basics milestone should include tests for:
+
+```text
+Contract:
+- page.info() returns normalized page info
+- page.exists() matches page.info().exists
+- page.categories() returns category titles
+- page.templates() returns template titles
+- page.links() returns linked page titles
+
+/mw:
+- page.info() maps to an Action API page-info request
+- page.exists() uses page-info missing state
+- page.categories(), page.templates(), and page.links() map to page relationship requests
+- relationship methods do not accidentally expose only the first paginated batch
+
+/mwn:
+- page.info() delegates to an mwn page/query helper
+- page.exists() delegates to an mwn page existence helper or equivalent query
+- page.categories(), page.templates(), and page.links() delegate to mwn page helpers where practical
+
+/testing:
+- mock page.info()
+- mock page.exists()
+- mock page.categories()
+- mock page.templates()
+- mock page.links()
+```

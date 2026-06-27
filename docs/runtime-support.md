@@ -39,14 +39,16 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Query | `wiki.query(params)` | supported | supported | Maps to `mw.Api#get` and `mwn.query`. |
 | Request | `wiki.request(params)` | future | future | Exact distinction from `query` must be defined. |
 | Page title | `page.title()` | supported | supported | First milestone. |
+| Page info | `page.info()` | future | future | Planned for page read basics. |
+| Page existence | `page.exists()` | future | future | Planned for page read basics. |
 | Page text | `page.text()` | supported | supported | First milestone. |
 | Save page | `page.save(text, summary?, options?)` | supported | supported | Portable if user has rights and token/session are available. |
 | Edit transform | `page.edit(transform, config)` | future | future | Should follow mwn semantics where practical. |
 | Page history | `page.history(...)` | future | future | Portable. |
 | Page history generator | `page.historyGen(...)` | partial | supported | Generator semantics may differ in frontend. |
-| Categories | `page.categories()` | future | future | Portable. |
-| Templates | `page.templates()` | future | future | Portable. |
-| Links | `page.links()` | future | future | Portable. |
+| Categories | `page.categories()` | future | future | Planned for page read basics. |
+| Templates | `page.templates()` | future | future | Planned for page read basics. |
+| Links | `page.links()` | future | future | Planned for page read basics. |
 | Backlinks | `page.backlinks()` | future | future | Portable. |
 | Subpages | `page.subpages()` | future | future | Portable with namespace rules. |
 | Logs | `page.logs()` | future | future | Portable. |
