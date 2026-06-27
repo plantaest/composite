@@ -1,14 +1,14 @@
 /**
  * Runtime identifiers supported by the first Composite milestone.
  */
-export type RuntimeKind = "mw" | "mwn" | "mock";
+export type RuntimeType = 'mw' | 'mwn' | 'mock';
 
 /**
  * Describes the concrete runtime behind a {@link Wiki}.
  */
 export interface Runtime {
   /**
-   * The runtime implementation kind.
+   * The runtime implementation type.
    */
-  kind: RuntimeKind;
+  type: RuntimeType;
 }

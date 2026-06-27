@@ -41,7 +41,7 @@ Examples:
 ```text
 CompositeError
 UnsupportedRuntimeError
-RuntimeKind
+RuntimeType
 ```
 
 ### 2. Adapter tests
@@ -172,20 +172,20 @@ The first milestone should include tests for:
 ```text
 Root/core:
 - root import does not expose runtime factories
-- RuntimeKind
+- RuntimeType
 - UnsupportedRuntimeError
 
 /mw:
 - Composite.current(config)
 - Composite.connect(config)
 - Composite.from(api, config)
-- wiki.runtime().kind === "mw"
+- wiki.runtime().type === "mw"
 - wiki.page(title).title()
 - page.text() maps to mw.Api request shape
 
 /mwn:
 - Composite.create(config) or Composite.from(bot)
-- wiki.runtime().kind === "mwn"
+- wiki.runtime().type === "mwn"
 - wiki.page(title).title()
 - page.text() delegates to mwn page.text()
 

@@ -1,4 +1,4 @@
-import type { Wiki } from "./Wiki";
+import type { Wiki } from './Wiki.js';
 
 /**
  * Shared multi-wiki registry contract.
@@ -18,9 +18,4 @@ export interface Wikis {
    * Return all known wiki identifiers.
    */
   ids(): string[];
-
-  /**
-   * Return the current or default wiki.
-   */
-  current(): Wiki;
 }

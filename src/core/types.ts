@@ -1,5 +1,5 @@
-export type { Page } from "./Page";
-export type { Runtime, RuntimeKind } from "./runtime";
-export type { User } from "./User";
-export type { Wiki } from "./Wiki";
-export type { Wikis } from "./Wikis";
+export type { Page } from './Page.js';
+export type { Runtime, RuntimeType } from './Runtime.js';
+export type { User } from './User.js';
+export type { Wiki } from './Wiki.js';
+export type { Wikis } from './Wikis.js';

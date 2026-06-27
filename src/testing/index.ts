@@ -1,2 +1,2 @@
-export * from "./MockWiki";
-export * from "./MockPage";
+export * from './MockPage.js';
+export * from './MockWiki.js';

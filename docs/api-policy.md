@@ -99,7 +99,13 @@ import { Composite } from "@taxonlabs/composite/mw";
 const currentWiki = Composite.current(config);
 const connectedWiki = Composite.connect(config);
 const wrappedWiki = Composite.from(api, config);
-const wikis = Composite.wikis(config);
+const wikis = Composite.wikis({
+  wikis: {
+    testwiki: {
+      serverName: "test.wikipedia.org"
+    }
+  }
+});
 ```
 
 Node.js / Toolforge runtime:
@@ -109,7 +115,13 @@ import { Composite } from "@taxonlabs/composite/mwn";
 
 const wiki = await Composite.create(config);
 const wrappedWiki = Composite.from(bot, config);
-const wikis = await Composite.wikis(config);
+const wikis = await Composite.wikis({
+  wikis: {
+    testwiki: {
+      apiUrl: "https://test.wikipedia.org/w/api.php"
+    }
+  }
+});
 ```
 
 ## Runtime escape hatch
@@ -123,11 +135,11 @@ const runtime = wiki.runtime();
 Example:
 
 ```ts
-if (runtime.kind === "mw") {
+if (runtime.type === "mw") {
   // Access frontend runtime facilities if needed.
 }
 
-if (runtime.kind === "mwn") {
+if (runtime.type === "mwn") {
   // Access wrapped mwn bot if needed.
 }
 ```

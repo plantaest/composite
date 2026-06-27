@@ -1,3 +1,4 @@
-export * from "./Composite";
-export * from "./MwWiki";
-export * from "./MwPage";
+export * from './Composite.js';
+export * from './MwPage.js';
+export * from './MwWiki.js';
+export * from './mediawiki.js';

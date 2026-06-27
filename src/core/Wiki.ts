@@ -1,5 +1,5 @@
-import type { Page } from "./Page";
-import type { Runtime } from "./runtime";
+import type { Page } from './Page.js';
+import type { Runtime } from './Runtime.js';
 
 /**
  * Shared MediaWiki client contract used by application code.

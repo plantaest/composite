@@ -1,0 +1,66 @@
+{
+  "name": "@taxonlabs/composite",
+  "version": "0.1.0",
+  "description": "Runtime-aware, mwn-shaped MediaWiki SDK for TypeScript.",
+  "type": "module",
+  "packageManager": "pnpm@8.15.5",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mw": {
+      "types": "./dist/runtimes/mw/index.d.ts",
+      "import": "./dist/runtimes/mw/index.js"
+    },
+    "./mwn": {
+      "types": "./dist/runtimes/mwn/index.d.ts",
+      "import": "./dist/runtimes/mwn/index.js"
+    },
+    "./wikitext": {
+      "types": "./dist/wikitext/index.d.ts",
+      "import": "./dist/wikitext/index.js"
+    },
+    "./streams": {
+      "types": "./dist/streams/index.d.ts",
+      "import": "./dist/streams/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "COMPOSITE.md",
+    "docs"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "biome check .",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:tests": "tsc -p tsconfig.test.json --noEmit"
+  },
+  "peerDependencies": {
+    "mwn": "^3.0.3"
+  },
+  "peerDependenciesMeta": {
+    "mwn": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.1",
+    "@types/node": "^26.0.1",
+    "mwn": "^3.0.3",
+    "types-mediawiki": "^2.0.0",
+    "types-mediawiki-api": "^2.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

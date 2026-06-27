@@ -39,10 +39,10 @@ Define minimal interfaces:
 
 ```ts
 export interface Runtime {
-  kind: RuntimeKind;
+  type: RuntimeType;
 }
 
-export type RuntimeKind = "mw" | "mwn" | "mock";
+export type RuntimeType = "mw" | "mwn" | "mock";
 
 export interface Wiki {
   runtime(): Runtime;
@@ -62,7 +62,6 @@ export interface Wikis {
   get(wikiId: string): Wiki;
   has(wikiId: string): boolean;
   ids(): string[];
-  current(): Wiki;
 }
 ```
 
@@ -78,7 +77,13 @@ import { Composite } from "@taxonlabs/composite/mw";
 const currentWiki = Composite.current(config);
 const connectedWiki = Composite.connect(config);
 const wrappedWiki = Composite.from(api, config);
-const wikis = Composite.wikis(config);
+const wikis = Composite.wikis({
+  wikis: {
+    testwiki: {
+      serverName: "test.wikipedia.org"
+    }
+  }
+});
 ```
 
 Required behavior for this milestone:
@@ -86,7 +91,7 @@ Required behavior for this milestone:
 ```ts
 const wiki = Composite.from(fakeApi, config);
 
-wiki.runtime().kind === "mw";
+wiki.runtime().type === "mw";
 wiki.page("Wikipedia:Sandbox").title() === "Wikipedia:Sandbox";
 await wiki.page("Wikipedia:Sandbox").text();
 ```
@@ -102,7 +107,13 @@ import { Composite } from "@taxonlabs/composite/mwn";
 
 const wiki = await Composite.create(config);
 const wrappedWiki = Composite.from(bot, config);
-const wikis = await Composite.wikis(config);
+const wikis = await Composite.wikis({
+  wikis: {
+    testwiki: {
+      apiUrl: "https://test.wikipedia.org/w/api.php"
+    }
+  }
+});
 ```
 
 Required behavior for this milestone:
@@ -110,7 +121,7 @@ Required behavior for this milestone:
 ```ts
 const wiki = Composite.from(fakeBot, config);
 
-wiki.runtime().kind === "mwn";
+wiki.runtime().type === "mwn";
 wiki.page("Wikipedia:Sandbox").title() === "Wikipedia:Sandbox";
 await wiki.page("Wikipedia:Sandbox").text();
 ```
@@ -134,7 +145,7 @@ const wiki = createMockWiki({
 Required behavior:
 
 ```ts
-wiki.runtime().kind === "mock";
+wiki.runtime().type === "mock";
 wiki.page("Wikipedia:Sandbox").title() === "Wikipedia:Sandbox";
 await wiki.page("Wikipedia:Sandbox").text() === "Hello";
 ```

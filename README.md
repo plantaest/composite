@@ -35,8 +35,8 @@ Planned package entry points:
 The root import is intentionally lightweight:
 
 ```ts
-import type { Wiki, Page, User, Wikis } from "@taxonlabs/composite";
-import { CompositeError } from "@taxonlabs/composite";
+import type { Wiki, Page, User, Wikis } from '@taxonlabs/composite';
+import { CompositeError } from '@taxonlabs/composite';
 ```
 
 Runtime-specific code must import a runtime explicitly.
@@ -46,24 +46,24 @@ Runtime-specific code must import a runtime explicitly.
 For user scripts, gadgets, and frontend applications running inside MediaWiki:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mw";
+import { Composite } from '@taxonlabs/composite/mw';
 
 const wiki = Composite.current({
-  apiUserAgent: "Composite/0.1"
+  apiUserAgent: 'Composite/0.1'
 });
 
-const text = await wiki.page("Wikipedia:Sandbox").text();
+const text = await wiki.page('Wikipedia:Sandbox').text();
 ```
 
 Cross-wiki access in the frontend runtime should use an explicit connection:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mw";
+import { Composite } from '@taxonlabs/composite/mw';
 
-const enwiki = Composite.connect({
-  wikiId: "enwiki",
-  serverName: "en.wikipedia.org",
-  apiUserAgent: "Composite/0.1"
+const testwiki = Composite.connect({
+  wikiId: 'testwiki',
+  serverName: 'test.wikipedia.org',
+  apiUserAgent: 'Composite/0.1'
 });
 ```
 
@@ -72,22 +72,22 @@ const enwiki = Composite.connect({
 For bots, services, and server-side applications:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mwn";
+import { Composite } from '@taxonlabs/composite/mwn';
 
 const wiki = await Composite.create({
-  apiUrl: "https://vi.wikipedia.org/w/api.php",
+  apiUrl: 'https://test.wikipedia.org/w/api.php',
   username: process.env.BOT_USERNAME,
   password: process.env.BOT_PASSWORD,
-  userAgent: "Composite/0.1"
+  userAgent: 'Composite/0.1'
 });
 
-const text = await wiki.page("Wikipedia:Sandbox").text();
+const text = await wiki.page('Wikipedia:Sandbox').text();
 ```
 
 Composite should also support wrapping an existing `mwn` instance:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mwn";
+import { Composite } from '@taxonlabs/composite/mwn';
 
 const wiki = Composite.from(bot);
 ```
@@ -97,7 +97,7 @@ const wiki = Composite.from(bot);
 Application logic should depend on the core interfaces, not on a concrete runtime:
 
 ```ts
-import type { Wiki } from "@taxonlabs/composite";
+import type { Wiki } from '@taxonlabs/composite';
 
 export async function readPage(wiki: Wiki, title: string) {
   return wiki.page(title).text();
