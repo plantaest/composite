@@ -4,7 +4,7 @@ Read `COMPOSITE.md` before making code or documentation changes.
 
 For branch names, commit messages, formatting, tests, and pull request expectations, follow `CONTRIBUTING.md`.
 
-When generating commit messages, follow the `Commit Messages` section in `CONTRIBUTING.md`:
+When generating commit messages, follow the `Commit messages` section in `CONTRIBUTING.md`:
 
 - Use Conventional Commits.
 - Use an imperative summary.

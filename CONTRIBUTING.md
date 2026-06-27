@@ -4,7 +4,7 @@ This guide keeps Composite contributions consistent across human and AI-assisted
 
 Composite is a runtime-aware, mwn-shaped MediaWiki SDK for TypeScript. Public API changes should follow the project policy docs and move in small, tested vertical slices.
 
-## Project Principles
+## Project principles
 
 - Keep Composite mwn-shaped, not mwn-cloned.
 - Keep the root import lightweight.
@@ -14,7 +14,7 @@ Composite is a runtime-aware, mwn-shaped MediaWiki SDK for TypeScript. Public AP
 - Prefer one primary API name for each concept.
 - Delegate low-level behavior to `mw` or `mwn` where practical.
 
-## Branch Naming
+## Branch naming
 
 Use short, descriptive branch names with a conventional prefix:
 
@@ -42,7 +42,7 @@ Codex-assisted branches may use:
 codex/<short-topic>
 ```
 
-## Commit Messages
+## Commit messages
 
 Use Conventional Commits:
 
@@ -82,7 +82,7 @@ test(mwn): cover page save delegation
 docs(milestones): add query and save plan
 ```
 
-## Development Setup
+## Development setup
 
 Use pnpm:
 
@@ -102,7 +102,7 @@ pnpm run check
 
 Run all relevant checks before opening a pull request.
 
-## Code Style
+## Code style
 
 - TypeScript should be ESM-first.
 - Use single quotes for strings.
@@ -111,7 +111,7 @@ Run all relevant checks before opening a pull request.
 - Keep comments concise and useful. Explain intent, runtime behavior, or non-obvious adapter shapes.
 - Avoid adding aliases such as both `page.text()` and `page.getText()` unless there is a strong compatibility reason.
 
-## API Changes
+## API changes
 
 Before adding or changing a public API, check:
 
@@ -161,7 +161,7 @@ Use:
 
 Live Wikimedia integration tests are not required for early milestones.
 
-## Pull Request Checklist
+## Pull request checklist
 
 Before requesting review:
 

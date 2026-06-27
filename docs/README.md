@@ -16,7 +16,7 @@ Roadmap documents describe direction. Milestone documents define active implemen
 - `milestones/01-foundation.md`: completed foundation milestone.
 - `milestones/02-query-and-save.md`: next implementation milestone.
 
-## Standing Policy
+## Standing policy
 
 - `api-policy.md`: API naming, design, and runtime-entry policy.
 - `runtime-support.md`: runtime support labels and availability matrix.
@@ -28,7 +28,7 @@ Roadmap documents describe direction. Milestone documents define active implemen
 - `capabilities.md`: high-level capability roadmap.
 - `api-mapping.md`: provisional adapter mapping and implementation order.
 
-## Contributor Guides
+## Contributor guides
 
 - `../COMPOSITE.md`: project-specific development rules.
 - `../CONTRIBUTING.md`: branch, commit, style, testing, and pull request conventions.
