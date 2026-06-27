@@ -76,7 +76,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
-| Query Action API | `wiki.query(params)` | `api.get(params)` / `api.post(params)` depending policy | `bot.query(params)` | both | not-started | adapter, contract | Define whether query is always GET-like. |
+| Query Action API | `wiki.query(params)` | `api.get(params)` | `bot.query(params)` | both | tested | adapter, contract | Query is GET-like in the first implementation. |
 | Request API | `wiki.request(params)` | `api.ajax(params)` / `api.post(params)` policy | `bot.request(params)` | both | needs-design | adapter | Distinction from `query` must be explicit. |
 | Raw request | `wiki.rawRequest(params)` | Possibly direct `mw.Api` call | `bot.rawRequest(params)` | partial/server-first | needs-design | adapter | Consider keeping as runtime escape hatch. |
 | Continued query | `wiki.continuedQuery(params)` | Loop over `continue` with conservative limits | `bot.continuedQuery(params)` | partial | not-started | adapter, contract | Return shape must be decided. |
@@ -168,7 +168,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
-| Save page text | `page.save(text, summary, options?)` | `api.postWithToken("csrf", { action: "edit", ... })` | `new bot.Page(title).save(text, summary, options)` | both | not-started | adapter, contract/integration | Core editing API. |
+| Save page text | `page.save(text, summary?, options?)` | `api.postWithToken("csrf", { action: "edit", ... })` | `new bot.Page(title).save(text, summary, options)` | both | tested | adapter, contract | Core editing API; live permission behavior is not integration-tested yet. |
 | Transform edit | `page.edit(transform, config?)` | Read text, apply transform, save with conflict protection | `new bot.Page(title).edit(transform, config)` | both | not-started | unit, adapter, contract | Follow mwn semantics where practical. |
 | Create page | `wiki.create(title, text, summary, options?)` | `action=edit&createonly=1` | `bot.create(...)` | both | not-started | adapter | Extended. |
 | New section | `page.newSection(subject, text, options?)` | `action=edit&section=new` | `bot.newSection(...)` or page helper | both | not-started | adapter | Useful for talk/project pages. |
@@ -293,7 +293,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 This milestone is defined by `docs/milestones/02-query-and-save.md`.
 
 - `wiki.query(params)`.
-- `page.save(text, summary, options?)`.
+- `page.save(text, summary?, options?)`.
 - Mock query support in `/testing`.
 - Mock page save behavior in `/testing`.
 - Adapter and contract tests for query and save.

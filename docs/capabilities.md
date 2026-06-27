@@ -185,7 +185,7 @@ Continuation is a first-class concern in MediaWiki API usage. Composite should m
 
 | Capability | Proposed API | Status | Notes |
 |---|---|---:|---|
-| Save page text | `page.save(text, summary, options?)` | core | mwn-shaped. |
+| Save page text | `page.save(text, summary?, options?)` | core | mwn-shaped. |
 | Transform edit | `page.edit(transform, config?)` | core | Should follow mwn semantics where practical. |
 | Create page | `wiki.create(title, text, summary, options?)` | extended | mwn-shaped; may also be page-level. |
 | New section | `page.newSection(subject, text, options?)` | extended | Useful for talk/project pages. |

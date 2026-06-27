@@ -1,5 +1,4 @@
 import { Mwn } from 'mwn';
-import { ConfigurationError } from '../../core/errors.js';
 import { WikiRegistry } from '../../core/WikiRegistry.js';
 import type { Wikis } from '../../core/Wikis.js';
 import { MwnWiki, type MwnWikiConfig } from './MwnWiki.js';
@@ -40,10 +39,6 @@ export class Composite {
         ],
       ),
     );
-
-    if (wikiEntries.length === 0) {
-      throw new ConfigurationError('At least one wiki config is required.');
-    }
 
     return new WikiRegistry(Object.fromEntries(wikiEntries));
   }

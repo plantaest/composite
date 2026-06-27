@@ -1,26 +1,55 @@
 import { ConfigurationError } from '../../../src/index.js';
+import type { MwApi } from '../../../src/runtimes/mw/index.js';
 import { Composite } from '../../../src/runtimes/mw/index.js';
 import { describeWikiContract } from '../../contract/wikiContract.js';
 
-function createFakeApi(text = 'Hello') {
-  return {
-    get: vi.fn(async () => ({
-      query: {
-        pages: [
-          {
-            revisions: [
-              {
-                slots: {
-                  main: {
-                    content: text,
+type FakeMwApi = MwApi & {
+  get: ReturnType<typeof vi.fn>;
+  postWithToken: ReturnType<typeof vi.fn>;
+};
+
+function createFakeApi(text = 'Hello'): FakeMwApi {
+  const api = {
+    get: vi.fn(async (params: Record<string, unknown>) => {
+      if (params.meta === 'siteinfo') {
+        return createSiteInfoResponse();
+      }
+
+      return {
+        query: {
+          pages: [
+            {
+              revisions: [
+                {
+                  slots: {
+                    main: {
+                      content: text,
+                    },
                   },
                 },
-              },
-            ],
-          },
-        ],
+              ],
+            },
+          ],
+        },
+      };
+    }),
+    postWithToken: vi.fn(async () => ({
+      edit: {
+        result: 'Success',
       },
     })),
+  };
+
+  return api as unknown as FakeMwApi;
+}
+
+function createSiteInfoResponse() {
+  return {
+    query: {
+      general: {
+        sitename: 'Wikipedia',
+      },
+    },
   };
 }
 
@@ -29,6 +58,12 @@ describeWikiContract(
   () => Composite.from(createFakeApi(), { wikiId: 'testwiki' }),
   {
     expectedText: 'Hello',
+    queryParams: {
+      action: 'query',
+      meta: 'siteinfo',
+    },
+    queryResponse: createSiteInfoResponse(),
+    savedText: 'Updated',
     title: 'Wikipedia:Sandbox',
   },
 );
@@ -155,6 +190,19 @@ describe('mw adapter', () => {
     );
   });
 
+  it('maps wiki.query() to mw.Api#get()', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+    const params = {
+      action: 'query',
+      meta: 'siteinfo',
+    };
+
+    await expect(wiki.query(params)).resolves.toEqual(createSiteInfoResponse());
+
+    expect(api.get).toHaveBeenCalledWith(params);
+  });
+
   it('maps page.text() to a MediaWiki revisions query', async () => {
     const api = createFakeApi('Mapped text');
     const wiki = Composite.from(api);
@@ -173,6 +221,44 @@ describe('mw adapter', () => {
     });
   });
 
+  it('maps page.save() to a csrf edit request', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+
+    await expect(
+      wiki.page('Wikipedia:Sandbox').save('Updated', 'Test edit', {
+        minor: true,
+      }),
+    ).resolves.toEqual({
+      title: 'Wikipedia:Sandbox',
+    });
+
+    expect(api.postWithToken).toHaveBeenCalledWith('csrf', {
+      action: 'edit',
+      title: 'Wikipedia:Sandbox',
+      text: 'Updated',
+      summary: 'Test edit',
+      minor: true,
+    });
+  });
+
+  it('omits summary when page.save() is called without one', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+
+    await expect(
+      wiki.page('Wikipedia:Sandbox').save('Updated'),
+    ).resolves.toEqual({
+      title: 'Wikipedia:Sandbox',
+    });
+
+    expect(api.postWithToken).toHaveBeenCalledWith('csrf', {
+      action: 'edit',
+      title: 'Wikipedia:Sandbox',
+      text: 'Updated',
+    });
+  });
+
   it('returns empty text when the response has no main slot content', async () => {
     const api = {
       get: vi.fn(async () => ({
@@ -184,8 +270,9 @@ describe('mw adapter', () => {
           ],
         },
       })),
+      postWithToken: vi.fn(),
     };
-    const wiki = Composite.from(api);
+    const wiki = Composite.from(api as unknown as MwApi);
 
     await expect(wiki.page('Wikipedia:Sandbox').text()).resolves.toBe('');
   });

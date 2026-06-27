@@ -52,7 +52,10 @@ const wiki = Composite.current({
   apiUserAgent: 'Composite/0.1'
 });
 
-const text = await wiki.page('Wikipedia:Sandbox').text();
+const page = wiki.page('Wikipedia:Sandbox');
+const text = await page.text();
+
+await page.save(text, 'Testing Composite');
 ```
 
 Cross-wiki access in the frontend runtime should use an explicit connection:
@@ -81,7 +84,10 @@ const wiki = await Composite.create({
   userAgent: 'Composite/0.1'
 });
 
-const text = await wiki.page('Wikipedia:Sandbox').text();
+const page = wiki.page('Wikipedia:Sandbox');
+const text = await page.text();
+
+await page.save(text, 'Testing Composite');
 ```
 
 Composite should also support wrapping an existing `mwn` instance:
@@ -101,6 +107,13 @@ import type { Wiki } from '@taxonlabs/composite';
 
 export async function readPage(wiki: Wiki, title: string) {
   return wiki.page(title).text();
+}
+
+export async function readSiteInfo(wiki: Wiki) {
+  return wiki.query({
+    action: 'query',
+    meta: 'siteinfo'
+  });
 }
 ```
 

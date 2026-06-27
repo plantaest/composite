@@ -1,5 +1,6 @@
 import type { Page } from '../../core/Page.js';
-import type { MwApi, MwPageTextResponse } from './mediawiki.js';
+import type { PageSaveOptions, PageSaveResult } from '../../core/types.js';
+import type { MwApi, MwApiParams, MwPageTextResponse } from './mediawiki.js';
 
 export class MwPage implements Page {
   constructor(
@@ -12,6 +13,8 @@ export class MwPage implements Page {
   }
 
   async text(): Promise<string> {
+    // Follows the MediaWiki Action API revisions module:
+    // https://www.mediawiki.org/wiki/API:Revisions
     const response = (await this.api.get({
       action: 'query',
       prop: 'revisions',
@@ -22,5 +25,31 @@ export class MwPage implements Page {
     })) as MwPageTextResponse;
 
     return response.query.pages[0]?.revisions?.[0]?.slots?.main?.content ?? '';
+  }
+
+  async save(
+    text: string,
+    summary?: string,
+    options: PageSaveOptions = {},
+  ): Promise<PageSaveResult> {
+    const params: MwApiParams = {
+      action: 'edit',
+      title: this.pageTitle,
+      text,
+    };
+
+    if (summary !== undefined) {
+      params.summary = summary;
+    }
+
+    if (options.minor !== undefined) {
+      params.minor = options.minor;
+    }
+
+    // Edit params follow the MediaWiki Action API edit module:
+    // https://www.mediawiki.org/wiki/API:Edit
+    await this.api.postWithToken('csrf', params);
+
+    return { title: this.pageTitle };
   }
 }

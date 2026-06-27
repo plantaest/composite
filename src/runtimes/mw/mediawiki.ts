@@ -1,13 +1,13 @@
+/// <reference types="types-mediawiki" />
+import type { UnknownApiParams } from 'types-mediawiki-api';
+
+export type MwApi = Pick<mw.Api, 'get' | 'postWithToken'>;
+export type MwApiParams = UnknownApiParams;
+
 export interface MwGlobal {
   Api: new (options?: Record<string, unknown>) => MwApi;
   ForeignApi?: new (url: string, options?: Record<string, unknown>) => MwApi;
-  config?: {
-    get(name: string): unknown;
-  };
-}
-
-export interface MwApi {
-  get(params: Record<string, unknown>): Promise<unknown>;
+  config?: Pick<typeof mw.config, 'get'>;
 }
 
 export interface MwApiOptionsConfig {

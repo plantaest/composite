@@ -36,11 +36,11 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Multi-wiki manager | `Composite.wikis(config)` | supported | supported | May be sync in `/mw`, async in `/mwn`. |
 | Page object | `wiki.page(title)` | supported | supported | Core portable API. |
 | User object | `wiki.user(name)` | future | future | Core portable API, not first milestone. |
-| Query | `wiki.query(params)` | future | future | Should map to `mw.Api` and `mwn.query`. |
+| Query | `wiki.query(params)` | supported | supported | Maps to `mw.Api#get` and `mwn.query`. |
 | Request | `wiki.request(params)` | future | future | Exact distinction from `query` must be defined. |
 | Page title | `page.title()` | supported | supported | First milestone. |
 | Page text | `page.text()` | supported | supported | First milestone. |
-| Save page | `page.save(text, summary, options)` | future | future | Portable if user has rights and token/session are available. |
+| Save page | `page.save(text, summary?, options?)` | supported | supported | Portable if user has rights and token/session are available. |
 | Edit transform | `page.edit(transform, config)` | future | future | Should follow mwn semantics where practical. |
 | Page history | `page.history(...)` | future | future | Portable. |
 | Page history generator | `page.historyGen(...)` | partial | supported | Generator semantics may differ in frontend. |

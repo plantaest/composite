@@ -36,15 +36,27 @@ export interface Wiki {
 export interface Page {
   title(): string;
   text(): Promise<string>;
-  save(text: string, summary: string, options?: PageSaveOptions): Promise<PageSaveResult>;
+  save(text: string, summary?: string, options?: PageSaveOptions): Promise<PageSaveResult>;
 }
 ```
 
 Add lightweight shared types:
 
 ```ts
-export type WikiQueryParams = Record<string, unknown>;
-export type WikiQueryResponse = unknown;
+export type WikiQueryParams = Record<
+  string,
+  string | number | boolean | string[] | number[] | Date | File | undefined
+>;
+
+export interface WikiQueryResponse {
+  batchcomplete?: true;
+  continue?: {
+    continue: string;
+    [key: string]: string;
+  };
+  query?: Record<string, unknown>;
+  [key: string]: unknown;
+}
 
 export interface PageSaveOptions {
   minor?: boolean;
@@ -78,7 +90,7 @@ Runtime mapping:
 
 The method should not perform live requests in tests. Adapter tests should use fake runtime objects.
 
-## `page.save(text, summary, options?)`
+## `page.save(text, summary?, options?)`
 
 `page.save()` is the first write method on `Page`.
 
@@ -104,7 +116,7 @@ For `wiki.query(params)`:
 api.get(params)
 ```
 
-For `page.save(text, summary, options?)`, use an `mw.Api`-compatible edit request. The exact request shape should be documented in the implementation tests.
+For `page.save(text, summary?, options?)`, use an `mw.Api`-compatible edit request. The exact request shape should be documented in the implementation tests.
 
 The first implementation may support only:
 
@@ -128,7 +140,7 @@ For `wiki.query(params)`:
 bot.query(params)
 ```
 
-For `page.save(text, summary, options?)`, delegate to the mwn page object.
+For `page.save(text, summary?, options?)`, delegate to the mwn page object.
 
 Prefer the mwn naming and semantics where practical. If mwn supports more save options than Composite exposes, keep the Composite surface small and map only documented options.
 
@@ -204,7 +216,7 @@ The runtime support matrix should move these APIs from `future` to supported:
 
 ```text
 wiki.query(params)
-page.save(text, summary, options)
+page.save(text, summary?, options?)
 ```
 
 ## Not in this milestone
@@ -235,7 +247,7 @@ real integration tests against Wikimedia sites
 This milestone is done when:
 
 - `wiki.query(params)` is implemented for `/mw`, `/mwn`, and `/testing`;
-- `page.save(text, summary, options?)` is implemented for `/mw`, `/mwn`, and `/testing`;
+- `page.save(text, summary?, options?)` is implemented for `/mw`, `/mwn`, and `/testing`;
 - shared contract tests cover query and save behavior;
 - runtime adapter tests verify fake runtime calls;
 - docs match the implemented API shape;

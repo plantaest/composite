@@ -58,23 +58,21 @@ export class Composite {
    */
   static wikis(config: MwWikisConfig): Wikis {
     const wikis = Object.fromEntries(
-      Object.entries(config.wikis).map(([wikiId, wikiConfig]) => [
-        wikiId,
-        createWiki({
+      Object.entries(config.wikis).map(([wikiId, wikiConfig]) => {
+        const config = {
           ...wikiConfig,
           wikiId: wikiConfig.wikiId ?? wikiId,
-        }),
-      ]),
+        };
+
+        return [
+          wikiId,
+          config.serverName !== undefined
+            ? Composite.connect(config)
+            : Composite.current(config),
+        ];
+      }),
     );
 
     return new WikiRegistry(wikis);
   }
-}
-
-function createWiki(config: MwWikiConfig): MwWiki {
-  if (config.serverName !== undefined) {
-    return Composite.connect(config);
-  }
-
-  return Composite.current(config);
 }

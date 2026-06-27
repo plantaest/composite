@@ -62,6 +62,7 @@ For `/mwn`, use a fake `mwn`-like object:
 
 ```ts
 const fakeBot = {
+  query: vi.fn(),
   Page: vi.fn()
 };
 ```
@@ -165,9 +166,13 @@ const text = await wiki.page("Wikipedia:Sandbox").text();
 
 This is useful for Taxon Labs applications that want to test logic against the `Wiki` interface without contacting a real wiki.
 
-## First milestone tests
+## Milestone test coverage
 
-The first milestone should include tests for:
+Keep tests small. The goal is to lock down architecture and adapter contracts one vertical slice at a time, not to test the whole SDK up front.
+
+### Foundation tests
+
+The foundation milestone should include tests for:
 
 ```text
 Root/core:
@@ -195,4 +200,27 @@ Root/core:
 - mock page.text()
 ```
 
-Keep tests small. The goal is to lock down the architecture and adapter contract early, not to implement the whole SDK.
+### Query and save tests
+
+The query and save milestone should include tests for:
+
+```text
+Contract:
+- wiki.query(params) returns the configured query response
+- page.save(text, summary?, options?) returns a minimal save result
+
+/mw:
+- wiki.query(params) maps to mw.Api#get
+- page.save(text, summary?, options?) maps to an edit request with a CSRF token
+- page.save(text) omits summary from the edit request
+
+/mwn:
+- wiki.query(params) delegates to mwn query()
+- page.save(text, summary?, options?) delegates to mwn page.save()
+- page.save(text) works without a summary
+
+/testing:
+- mock wiki.query()
+- mock page.save()
+- mock page.save() updates stored page text
+```
