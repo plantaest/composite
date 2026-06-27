@@ -106,13 +106,12 @@ export async function readPage(wiki: Wiki, title: string) {
 
 Frontend and server entry points create the runtime-specific `Wiki`; shared code consumes the common interface.
 
-## Initial milestone
+## Documentation
 
-The first milestone is intentionally small:
+Start with `docs/README.md` for the documentation map.
 
-- Define core interfaces: `Wiki`, `Page`, `User`, `Wikis`, `Runtime`.
-- Define runtime entry points for `/mw` and `/mwn`.
-- Implement `wiki.runtime()`, `wiki.page(title)`, `page.title()`, and `page.text()`.
-- Add minimal mock/testing utilities.
+The active implementation scope lives in `docs/milestones/`. Roadmap documents such as `docs/capabilities.md` and `docs/api-mapping.md` describe direction, but milestone documents define the next concrete slice.
 
-See `docs/first-milestone.md`.
+## License
+
+MIT. See `LICENSE`.

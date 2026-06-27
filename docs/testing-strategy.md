@@ -62,7 +62,7 @@ For `/mwn`, use a fake `mwn`-like object:
 
 ```ts
 const fakeBot = {
-  page: vi.fn()
+  Page: vi.fn()
 };
 ```
 

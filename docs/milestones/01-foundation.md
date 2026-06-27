@@ -1,4 +1,4 @@
-# First Milestone
+# Foundation Milestone
 
 This document defines the first implementation milestone for the rebuilt Composite repository.
 
@@ -158,17 +158,19 @@ src/
 
   core/
     errors.ts
-    runtime.ts
+    Runtime.ts
     Wiki.ts
     Page.ts
     User.ts
     Wikis.ts
+    WikiRegistry.ts
     types.ts
 
   runtimes/
     mw/
       index.ts
       Composite.ts
+      mediawiki.ts
       MwWiki.ts
       MwPage.ts
 

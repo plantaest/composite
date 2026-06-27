@@ -28,7 +28,7 @@ This matrix is provisional. It should be updated as APIs are implemented.
 
 | Capability | Proposed API | `mw` runtime | `mwn` runtime | Notes |
 |---|---|---:|---:|---|
-| Runtime info | `wiki.runtime()` | supported | supported | Must identify runtime kind. |
+| Runtime info | `wiki.runtime()` | supported | supported | Must identify runtime `type`. |
 | Current wiki | `Composite.current()` | frontend-only | unsupported | Only natural inside MediaWiki frontend. |
 | Connect wiki | `Composite.connect(config)` | frontend-only | unsupported | Requires an explicit server name and `mw.ForeignApi`. |
 | Create wiki | `Composite.create(config)` | unsupported | server-only | Creates or initializes an `mwn`-backed wiki. |
