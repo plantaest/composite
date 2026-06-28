@@ -1,6 +1,11 @@
 import type { Page } from './Page.js';
 import type { Runtime } from './Runtime.js';
-import type { WikiQueryParams, WikiQueryResponse } from './types.js';
+import type {
+  WikiQueryParams,
+  WikiQueryResponse,
+  WikiRequestParams,
+  WikiRequestResponse,
+} from './types.js';
 
 /**
  * Shared MediaWiki client contract used by application code.
@@ -20,7 +25,12 @@ export interface Wiki {
   page(title: string): Page;
 
   /**
-   * Run a low-level MediaWiki Action API query through the active runtime.
+   * Run a MediaWiki Action API request through the active runtime.
+   */
+  request(params: WikiRequestParams): Promise<WikiRequestResponse>;
+
+  /**
+   * Run a MediaWiki Action API query through the active runtime.
    */
   query(params: WikiQueryParams): Promise<WikiQueryResponse>;
 }

@@ -1,4 +1,4 @@
-# Query and Save Milestone
+# Request, Query, and Save Milestone
 
 This document defines the second implementation milestone after the first Composite skeleton.
 
@@ -12,7 +12,7 @@ Read this together with:
 
 The goal is to add the first practical low-level API capability and the first write capability, while keeping the runtime adapter boundary small and testable.
 
-Do not implement broad MediaWiki coverage in this milestone.
+This milestone is limited to the APIs and behavior listed below.
 
 ## Goal
 
@@ -32,6 +32,7 @@ Add these methods to the core interfaces:
 export interface Wiki {
   runtime(): Runtime;
   page(title: string): Page;
+  request(params: WikiRequestParams): Promise<WikiRequestResponse>;
   query(params: WikiQueryParams): Promise<WikiQueryResponse>;
 }
 
@@ -45,19 +46,24 @@ export interface Page {
 Add lightweight shared types:
 
 ```ts
-export type WikiQueryParams = Record<
+export type WikiRequestParams = Record<
   string,
   string | number | boolean | string[] | number[] | Date | File | undefined
 >;
 
-export interface WikiQueryResponse {
+export interface WikiRequestResponse {
+  [key: string]: unknown;
+}
+
+export type WikiQueryParams = WikiRequestParams;
+
+export interface WikiQueryResponse extends WikiRequestResponse {
   batchcomplete?: true;
   continue?: {
     continue: string;
     [key: string]: string;
   };
   query?: Record<string, unknown>;
-  [key: string]: unknown;
 }
 
 export interface PageSaveOptions {
@@ -71,24 +77,46 @@ export interface PageSaveResult {
 
 These types may become stricter later. The second milestone should prefer a simple shared contract over an early comprehensive MediaWiki API type model.
 
-## `wiki.query(params)`
+## `wiki.request(params)`
 
-`wiki.query(params)` is a low-level escape hatch for supported read requests.
+`wiki.request(params)` is the generic Action API request primitive for early Composite APIs.
 
 Expected behavior:
 
 ```ts
-const response = await wiki.query({
-  action: "query",
-  meta: "siteinfo"
+const response = await wiki.request({
+  action: 'parse',
+  page: 'Wikipedia:Sandbox'
 });
 ```
 
 Runtime mapping:
 
 - `/mw`: delegate to `mw.Api#get(params)`.
-- `/mwn`: delegate to `Mwn#query(params)`.
-- `/testing`: return configured mock query responses.
+- `/mwn`: delegate to `Mwn#request(params)`.
+- `/testing`: return configured mock request responses.
+
+In this milestone, `wiki.request()` is GET-like and read-oriented. Token-based write APIs such as `page.save()` should keep using their own adapter-specific write path.
+
+## `wiki.query(params)`
+
+`wiki.query(params)` is an mwn-style convenience helper for Action API `action=query` read requests.
+
+Expected behavior:
+
+```ts
+const response = await wiki.query({
+  meta: 'siteinfo'
+});
+```
+
+Runtime mapping:
+
+- `/mw`: call `wiki.request(Object.assign({ action: 'query' }, params))`.
+- `/mwn`: call `wiki.request(Object.assign({ action: 'query' }, params))`.
+- `/testing`: call `wiki.request(Object.assign({ action: 'query' }, params))`.
+
+Callers should not override `action`; use `wiki.request(params)` for non-query actions. Composite does not validate this in the second milestone.
 
 The method should not perform live requests in tests. Adapter tests should use fake runtime objects.
 
@@ -99,7 +127,7 @@ The method should not perform live requests in tests. Adapter tests should use f
 Expected behavior:
 
 ```ts
-await wiki.page("Wikipedia:Sandbox").save("Hello", "Testing Composite");
+await wiki.page('Wikipedia:Sandbox').save('Hello', 'Testing Composite');
 ```
 
 Runtime mapping:
@@ -112,10 +140,16 @@ This method is portable in API shape, but depends on the active user's rights, t
 
 ## `/mw` adapter details
 
-For `wiki.query(params)`:
+For `wiki.request(params)`:
 
 ```ts
 api.get(params)
+```
+
+For `wiki.query(params)`:
+
+```ts
+wiki.request(Object.assign({ action: 'query' }, params))
 ```
 
 For `page.save(text, summary?, options?)`, use an `mw.Api`-compatible edit request. The exact request shape should be documented in the implementation tests.
@@ -124,7 +158,7 @@ The first implementation may support only:
 
 ```ts
 {
-  action: "edit",
+  action: 'edit',
   title,
   text,
   summary,
@@ -136,10 +170,16 @@ Do not implement advanced edit options yet.
 
 ## `/mwn` adapter details
 
+For `wiki.request(params)`:
+
+```ts
+bot.request(params)
+```
+
 For `wiki.query(params)`:
 
 ```ts
-bot.query(params)
+wiki.request(Object.assign({ action: 'query' }, params))
 ```
 
 For `page.save(text, summary?, options?)`, delegate to the mwn page object.
@@ -153,18 +193,18 @@ Extend the mock wiki to support:
 ```ts
 const wiki = createMockWiki({
   pages: {
-    "Wikipedia:Sandbox": "Hello"
+    'Wikipedia:Sandbox': 'Hello'
   },
-  queries: [
+  requests: [
     {
       match: {
-        action: "query",
-        meta: "siteinfo"
+        action: 'query',
+        meta: 'siteinfo'
       },
       response: {
         query: {
           general: {
-            sitename: "Wikipedia"
+            sitename: 'Wikipedia'
           }
         }
       }
@@ -176,12 +216,13 @@ const wiki = createMockWiki({
 Required behavior:
 
 ```ts
-await wiki.query({ action: "query", meta: "siteinfo" });
-await wiki.page("Wikipedia:Sandbox").save("Updated", "Test edit");
-await wiki.page("Wikipedia:Sandbox").text() === "Updated";
+await wiki.request({ action: 'parse', page: 'Wikipedia:Sandbox' });
+await wiki.query({ meta: 'siteinfo' });
+await wiki.page('Wikipedia:Sandbox').save('Updated', 'Test edit');
+await wiki.page('Wikipedia:Sandbox').text() === 'Updated';
 ```
 
-The mock query design may be simplified during implementation, but it must remain deterministic and runtime-independent.
+The mock request design may be simplified during implementation, but it must remain deterministic and runtime-independent.
 
 ## Tests required
 
@@ -198,59 +239,24 @@ tests/testing/
 Minimum tests:
 
 - `MockWiki` satisfies the updated `Wiki` and `Page` contract.
-- `/mw` `wiki.query(params)` delegates to fake `api.get(params)`.
-- `/mwn` `wiki.query(params)` delegates to fake `bot.query(params)`.
+- `/mw` `wiki.request(params)` delegates to fake `api.get(params)`.
+- `/mwn` `wiki.request(params)` delegates to fake `bot.request(params)`.
+- `/mw` `wiki.query(params)` delegates through `wiki.request(Object.assign({ action: 'query' }, params))`.
+- `/mwn` `wiki.query(params)` delegates through `wiki.request(Object.assign({ action: 'query' }, params))`.
 - `/mw` `page.save()` maps to the expected fake API edit request.
 - `/mwn` `page.save()` delegates to the fake mwn page object.
+- `/testing` `wiki.request()` returns configured mock request responses.
 - `/testing` `page.save()` updates mock page text.
 - import boundary tests still pass.
-
-## Documentation updates
-
-Update these docs when implementing this milestone:
-
-- `README.md`
-- `docs/api-policy.md`
-- `docs/runtime-support.md`
-- `docs/testing-strategy.md`
-
-The runtime support matrix should move these APIs from `future` to supported:
-
-```text
-wiki.query(params)
-page.save(text, summary?, options?)
-```
-
-## Not in this milestone
-
-Do not implement these yet:
-
-```text
-wiki.request()
-page.edit()
-page.history()
-page.categories()
-page.templates()
-page.links()
-page.backlinks()
-page.logs()
-page.purge()
-wiki.search()
-wiki.sparqlQuery()
-user.info()
-user.contribs()
-real integration tests against Wikimedia sites
-```
-
-`wiki.request()` should wait until the distinction between `query` and `request` is clearly defined.
 
 ## Definition of done
 
 This milestone is done when:
 
+- `wiki.request(params)` is implemented for `/mw`, `/mwn`, and `/testing`;
 - `wiki.query(params)` is implemented for `/mw`, `/mwn`, and `/testing`;
 - `page.save(text, summary?, options?)` is implemented for `/mw`, `/mwn`, and `/testing`;
-- shared contract tests cover query and save behavior;
+- shared contract tests cover request, query, and save behavior;
 - runtime adapter tests verify fake runtime calls;
 - docs match the implemented API shape;
-- typecheck, build, tests, Biome check, and package audit pass.
+- typecheck, build, tests, and Biome check pass.

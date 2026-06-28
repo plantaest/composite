@@ -4,7 +4,7 @@ import { describeWikiContract } from '../../contract/wikiContract.js';
 
 function createFakeBot(text = 'Hello'): Mwn {
   return {
-    query: vi.fn(async () => createSiteInfoResponse()),
+    request: vi.fn(async () => createSiteInfoResponse()),
     Page: vi.fn(function Page(title: string) {
       return {
         text: vi.fn(async () => `${text} from ${title}`),
@@ -34,10 +34,14 @@ describeWikiContract(
   {
     expectedText: 'Hello from Wikipedia:Sandbox',
     queryParams: {
-      action: 'query',
       meta: 'siteinfo',
     },
     queryResponse: createSiteInfoResponse(),
+    requestParams: {
+      action: 'query',
+      meta: 'siteinfo',
+    },
+    requestResponse: createSiteInfoResponse(),
     savedText: 'Updated',
     title: 'Wikipedia:Sandbox',
   },
@@ -56,7 +60,7 @@ describe('mwn adapter', () => {
       save: vi.fn(),
     };
     const bot = {
-      query: vi.fn(),
+      request: vi.fn(),
       Page: vi.fn(function Page() {
         return mwnPage;
       }),
@@ -71,17 +75,53 @@ describe('mwn adapter', () => {
     expect(mwnPage.text).toHaveBeenCalledWith();
   });
 
-  it('delegates wiki.query() to the mwn bot', async () => {
+  it('delegates wiki.request() to the mwn bot', async () => {
     const bot = createFakeBot();
     const wiki = Composite.from(bot);
     const params = {
-      action: 'query',
+      action: 'parse',
+      page: 'Wikipedia:Sandbox',
+    };
+
+    await expect(wiki.request(params)).resolves.toEqual(
+      createSiteInfoResponse(),
+    );
+
+    expect(bot.request).toHaveBeenCalledWith(params);
+  });
+
+  it('delegates wiki.query() to mwn request with action=query', async () => {
+    const bot = createFakeBot();
+    const wiki = Composite.from(bot);
+    const params = {
       meta: 'siteinfo',
     };
 
     await expect(wiki.query(params)).resolves.toEqual(createSiteInfoResponse());
 
-    expect(bot.query).toHaveBeenCalledWith(params);
+    expect(bot.request).toHaveBeenCalledWith({
+      action: 'query',
+      meta: 'siteinfo',
+    });
+  });
+
+  it('lets explicit action override wiki.query() action', async () => {
+    const bot = createFakeBot();
+    const wiki = Composite.from(bot);
+
+    await expect(
+      wiki.query({
+        action: 'parse',
+        page: 'Wikipedia:Sandbox',
+        meta: 'siteinfo',
+      }),
+    ).resolves.toEqual(createSiteInfoResponse());
+
+    expect(bot.request).toHaveBeenCalledWith({
+      action: 'parse',
+      page: 'Wikipedia:Sandbox',
+      meta: 'siteinfo',
+    });
   });
 
   it('delegates page.save() to the mwn page object', async () => {
@@ -94,7 +134,7 @@ describe('mwn adapter', () => {
       })),
     };
     const bot = {
-      query: vi.fn(),
+      request: vi.fn(),
       Page: vi.fn(function Page() {
         return mwnPage;
       }),
@@ -125,7 +165,7 @@ describe('mwn adapter', () => {
       })),
     };
     const bot = {
-      query: vi.fn(),
+      request: vi.fn(),
       Page: vi.fn(function Page() {
         return mwnPage;
       }),

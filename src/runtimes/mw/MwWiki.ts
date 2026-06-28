@@ -1,5 +1,10 @@
 import type { Runtime } from '../../core/Runtime.js';
-import type { WikiQueryParams, WikiQueryResponse } from '../../core/types.js';
+import type {
+  WikiQueryParams,
+  WikiQueryResponse,
+  WikiRequestParams,
+  WikiRequestResponse,
+} from '../../core/types.js';
 import type { Wiki } from '../../core/Wiki.js';
 import { MwPage } from './MwPage.js';
 import type { MwApi, MwApiParams } from './mediawiki.js';
@@ -24,7 +29,15 @@ export class MwWiki implements Wiki {
     return new MwPage(this.api, title);
   }
 
-  async query(params: WikiQueryParams): Promise<WikiQueryResponse> {
+  async request(params: WikiRequestParams): Promise<WikiRequestResponse> {
     return Promise.resolve(this.api.get(params as MwApiParams));
+  }
+
+  async query(params: WikiQueryParams): Promise<WikiQueryResponse> {
+    // Match mwn's query helper: action=query is supplied by the helper.
+    // Callers should use request() for non-query actions.
+    return this.request(
+      Object.assign({ action: 'query' }, params),
+    ) as Promise<WikiQueryResponse>;
   }
 }

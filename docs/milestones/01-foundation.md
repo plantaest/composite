@@ -6,7 +6,7 @@ Status: completed.
 
 The goal is to establish the architecture, public import paths, core interfaces, minimal runtime entry points, and first shared capability.
 
-Do not implement broad MediaWiki coverage in this milestone.
+This milestone is limited to the APIs and behavior listed below.
 
 ## Goal
 
@@ -24,13 +24,13 @@ Create the smallest working Composite skeleton that demonstrates:
 The first milestone should prepare these imports:
 
 ```ts
-import type { Wiki, Page, User, Wikis } from "@taxonlabs/composite";
-import { CompositeError, UnsupportedRuntimeError } from "@taxonlabs/composite";
+import type { Wiki, Page, User, Wikis } from '@taxonlabs/composite';
+import { CompositeError, UnsupportedRuntimeError } from '@taxonlabs/composite';
 
-import { Composite as MwComposite } from "@taxonlabs/composite/mw";
-import { Composite as MwnComposite } from "@taxonlabs/composite/mwn";
+import { Composite as MwComposite } from '@taxonlabs/composite/mw';
+import { Composite as MwnComposite } from '@taxonlabs/composite/mwn';
 
-import { createMockWiki } from "@taxonlabs/composite/testing";
+import { createMockWiki } from '@taxonlabs/composite/testing';
 ```
 
 The `/wikitext` and `/streams` entry points may exist as placeholders, but they do not need feature implementation in the first milestone.
@@ -44,7 +44,7 @@ export interface Runtime {
   type: RuntimeType;
 }
 
-export type RuntimeType = "mw" | "mwn" | "mock";
+export type RuntimeType = 'mw' | 'mwn' | 'mock';
 
 export interface Wiki {
   runtime(): Runtime;
@@ -74,7 +74,7 @@ These interfaces can evolve, but the first milestone should keep them minimal.
 Implement or stub with tests:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mw";
+import { Composite } from '@taxonlabs/composite/mw';
 
 const currentWiki = Composite.current(config);
 const connectedWiki = Composite.connect(config);
@@ -82,7 +82,7 @@ const wrappedWiki = Composite.from(api, config);
 const wikis = Composite.wikis({
   wikis: {
     testwiki: {
-      serverName: "test.wikipedia.org"
+      serverName: 'test.wikipedia.org'
     }
   }
 });
@@ -93,9 +93,9 @@ Required behavior for this milestone:
 ```ts
 const wiki = Composite.from(fakeApi, config);
 
-wiki.runtime().type === "mw";
-wiki.page("Wikipedia:Sandbox").title() === "Wikipedia:Sandbox";
-await wiki.page("Wikipedia:Sandbox").text();
+wiki.runtime().type === 'mw';
+wiki.page('Wikipedia:Sandbox').title() === 'Wikipedia:Sandbox';
+await wiki.page('Wikipedia:Sandbox').text();
 ```
 
 `page.text()` should map to an appropriate `mw.Api` query shape. It does not need to support every page content edge case in this milestone.
@@ -105,14 +105,14 @@ await wiki.page("Wikipedia:Sandbox").text();
 Implement or stub with tests:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mwn";
+import { Composite } from '@taxonlabs/composite/mwn';
 
 const wiki = await Composite.create(config);
 const wrappedWiki = Composite.from(bot, config);
 const wikis = await Composite.wikis({
   wikis: {
     testwiki: {
-      apiUrl: "https://test.wikipedia.org/w/api.php"
+      apiUrl: 'https://test.wikipedia.org/w/api.php'
     }
   }
 });
@@ -123,9 +123,9 @@ Required behavior for this milestone:
 ```ts
 const wiki = Composite.from(fakeBot, config);
 
-wiki.runtime().type === "mwn";
-wiki.page("Wikipedia:Sandbox").title() === "Wikipedia:Sandbox";
-await wiki.page("Wikipedia:Sandbox").text();
+wiki.runtime().type === 'mwn';
+wiki.page('Wikipedia:Sandbox').title() === 'Wikipedia:Sandbox';
+await wiki.page('Wikipedia:Sandbox').text();
 ```
 
 `page.text()` should delegate to the corresponding mwn page text behavior.
@@ -135,11 +135,11 @@ await wiki.page("Wikipedia:Sandbox").text();
 Implement:
 
 ```ts
-import { createMockWiki } from "@taxonlabs/composite/testing";
+import { createMockWiki } from '@taxonlabs/composite/testing';
 
 const wiki = createMockWiki({
   pages: {
-    "Wikipedia:Sandbox": "Hello"
+    'Wikipedia:Sandbox': 'Hello'
   }
 });
 ```
@@ -147,9 +147,9 @@ const wiki = createMockWiki({
 Required behavior:
 
 ```ts
-wiki.runtime().type === "mock";
-wiki.page("Wikipedia:Sandbox").title() === "Wikipedia:Sandbox";
-await wiki.page("Wikipedia:Sandbox").text() === "Hello";
+wiki.runtime().type === 'mock';
+wiki.page('Wikipedia:Sandbox').title() === 'Wikipedia:Sandbox';
+await wiki.page('Wikipedia:Sandbox').text() === 'Hello';
 ```
 
 ## Suggested source structure
@@ -213,29 +213,6 @@ Minimum tests:
 - `/mwn` adapter satisfies the basic `Wiki` contract with a fake bot.
 - `page.text()` delegates or maps correctly in each runtime.
 - root import does not import runtime implementations.
-
-## Not in this milestone
-
-Do not implement these yet:
-
-```text
-page.save()
-page.edit()
-page.history()
-page.categories()
-page.templates()
-page.links()
-page.backlinks()
-page.logs()
-wiki.search()
-wiki.sparqlQuery()
-wiki.upload()
-EventStreams
-Parsoid
-Wikibase
-OAuth
-real integration tests against Wikimedia sites
-```
 
 ## Definition of done
 

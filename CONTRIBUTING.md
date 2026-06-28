@@ -44,10 +44,10 @@ codex/<short-topic>
 
 ## Commit messages
 
-Use Conventional Commits:
+Use Conventional Commits. Prefer scopes when they clarify the affected area:
 
 ```text
-type: short imperative summary
+type(scope): short imperative summary
 ```
 
 Recommended types:
@@ -66,20 +66,18 @@ ci
 Examples:
 
 ```text
-feat: add wiki query support
-fix: require serverName for mw connect
-docs: add capability roadmap
-refactor: rename WikiMap to WikiRegistry
-test: cover mock page save
+feat(core): add wiki request interface
+fix(mw): require serverName for connect
+docs(roadmap): add capability roadmap
+refactor(core): rename WikiMap to WikiRegistry
+test(testing): cover mock page save
 chore: configure biome
 ```
 
-Scopes are optional but welcome when they clarify the affected area:
+Scopes are optional when there is no clear area:
 
 ```text
-feat(mw): add query adapter
-test(mwn): cover page save delegation
-docs(milestones): add query and save plan
+chore: configure biome
 ```
 
 ## Development setup
@@ -115,11 +113,11 @@ Run all relevant checks before opening a pull request.
 
 Before adding or changing a public API, check:
 
+- the active milestone in `docs/milestones/`
 - `docs/api-policy.md`
 - `docs/runtime-support.md`
 - `docs/api-mapping.md`
 - `docs/decisions/`
-- the active milestone in `docs/milestones/`
 
 For each public API change:
 
@@ -128,7 +126,7 @@ For each public API change:
 - update runtime adapters where supported;
 - add or update contract tests;
 - add adapter tests with fake runtime objects;
-- update documentation if the public surface changes.
+- update documentation if the public surface changes;
 - add or update a decision record when the reason for the choice would not be obvious later.
 
 Unsupported runtime behavior should fail explicitly, usually with `UnsupportedRuntimeError`.
@@ -146,7 +144,7 @@ The docs have different roles:
 - `docs/testing-strategy.md`: testing layers and expectations.
 - `docs/decisions/`: accepted design decisions and their rationale.
 - `docs/capabilities.md`: long-term capability roadmap.
-- `docs/api-mapping.md`: provisional runtime adapter mapping.
+- `docs/api-mapping.md`: provisional runtime adapter mapping and general implementation direction.
 - `docs/milestones/`: active milestone scope.
 
 Roadmap docs are not implementation promises. Milestone docs define current planned scope.

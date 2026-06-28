@@ -36,8 +36,8 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Multi-wiki manager | `Composite.wikis(config)` | supported | supported | May be sync in `/mw`, async in `/mwn`. |
 | Page object | `wiki.page(title)` | supported | supported | Core portable API. |
 | User object | `wiki.user(name)` | future | future | Core portable API, not first milestone. |
-| Query | `wiki.query(params)` | supported | supported | Maps to `mw.Api#get` and `mwn.query`. |
-| Request | `wiki.request(params)` | future | future | Exact distinction from `query` must be defined. |
+| Request | `wiki.request(params)` | supported | supported | Generic GET-like Action API primitive in the second milestone. |
+| Query | `wiki.query(params)` | supported | supported | mwn-style helper that supplies `action=query` through `request()`. |
 | Page title | `page.title()` | supported | supported | First milestone. |
 | Page info | `page.info()` | future | future | Planned for page read basics. |
 | Page existence | `page.exists()` | future | future | Planned for page read basics. |
@@ -45,7 +45,7 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Save page | `page.save(text, summary?, options?)` | supported | supported | Portable if user has rights and token/session are available. |
 | Edit transform | `page.edit(transform, config)` | future | future | Should follow mwn semantics where practical. |
 | Page history | `page.history(...)` | future | future | Portable. |
-| Page history generator | `page.historyGen(...)` | partial | supported | Generator semantics may differ in frontend. |
+| Page history generator | `page.historyGen(...)` | future | future | Generator semantics may differ in frontend. |
 | Categories | `page.categories()` | future | future | Planned for page read basics. |
 | Templates | `page.templates()` | future | future | Planned for page read basics. |
 | Links | `page.links()` | future | future | Planned for page read basics. |
@@ -55,7 +55,7 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Purge | `page.purge()` | future | future | Portable. |
 | Search | `wiki.search(query, options)` | future | future | Portable. |
 | SPARQL | `wiki.sparqlQuery(query, endpoint)` | future | future | May use fetch in `/mw`, delegate to mwn in `/mwn`. |
-| Upload | `wiki.upload(...)` | partial | future | Frontend behavior may differ. |
+| Upload | `wiki.upload(...)` | future | future | Frontend behavior may differ. |
 | Download | `wiki.download(...)` | unsupported | server-only | Filesystem-oriented. |
 | Login | `wiki.login(...)` | unsupported | server-only | Frontend uses current browser session. |
 | Logout | `wiki.logout(...)` | unsupported | server-only | Frontend should not emulate bot session behavior. |
@@ -63,7 +63,7 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | User contribs | `user.contribs()` | future | future | Portable. |
 | User options | `wiki.userinfo()` / option APIs | future | future | Needs careful design. |
 | EventStreams | `wiki.eventStreams(...)` or `/streams` | future | future | Custom module; not primarily mwn-shaped. |
-| Wikitext utils | `/wikitext` functions | supported | supported | Pure utilities, runtime-independent. |
+| Wikitext entry point | `/wikitext` | supported | supported | Placeholder subpath exists; pure utilities are not implemented yet. |
 | Testing mock | `/testing` | supported | supported | Runtime-independent mock utilities. |
 
 ## Unsupported runtime behavior
@@ -74,8 +74,8 @@ Preferred behavior:
 
 ```ts
 throw new UnsupportedRuntimeError({
-  api: "wiki.download",
-  runtime: "mw"
+  api: 'wiki.download',
+  runtime: 'mw'
 });
 ```
 

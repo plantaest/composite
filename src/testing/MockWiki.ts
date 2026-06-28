@@ -1,17 +1,22 @@
 import type { Runtime } from '../core/Runtime.js';
-import type { WikiQueryParams, WikiQueryResponse } from '../core/types.js';
+import type {
+  WikiQueryParams,
+  WikiQueryResponse,
+  WikiRequestParams,
+  WikiRequestResponse,
+} from '../core/types.js';
 import type { Wiki } from '../core/Wiki.js';
 import { MockPage } from './MockPage.js';
 import { matchesParams } from './matchesParams.js';
 
-export interface MockQuery {
-  match: WikiQueryParams;
-  response: WikiQueryResponse;
+export interface MockRequest {
+  match: WikiRequestParams;
+  response: WikiRequestResponse;
 }
 
 export interface MockWikiConfig {
   pages?: Record<string, string>;
-  queries?: MockQuery[];
+  requests?: MockRequest[];
 }
 
 export function createMockWiki(config: MockWikiConfig = {}): MockWiki {
@@ -20,11 +25,11 @@ export function createMockWiki(config: MockWikiConfig = {}): MockWiki {
 
 export class MockWiki implements Wiki {
   private readonly pages: Record<string, string>;
-  private readonly queries: MockQuery[];
+  private readonly requests: MockRequest[];
 
   constructor(config: MockWikiConfig = {}) {
     this.pages = config.pages ?? {};
-    this.queries = config.queries ?? [];
+    this.requests = config.requests ?? [];
   }
 
   runtime(): Runtime {
@@ -35,11 +40,19 @@ export class MockWiki implements Wiki {
     return new MockPage(title, this.pages);
   }
 
-  async query(params: WikiQueryParams): Promise<WikiQueryResponse> {
-    const query = this.queries.find(({ match }) =>
+  async request(params: WikiRequestParams): Promise<WikiRequestResponse> {
+    const request = this.requests.find(({ match }) =>
       matchesParams(match, params),
     );
 
-    return query?.response ?? {};
+    return request?.response ?? {};
+  }
+
+  async query(params: WikiQueryParams): Promise<WikiQueryResponse> {
+    // Match mwn's query helper: action=query is supplied by the helper.
+    // Callers should use request() for non-query actions.
+    return this.request(
+      Object.assign({ action: 'query' }, params),
+    ) as Promise<WikiQueryResponse>;
   }
 }

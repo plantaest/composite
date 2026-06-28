@@ -21,7 +21,7 @@ Composite is:
 
 ## Public entry points
 
-Planned package entry points:
+Package entry points:
 
 ```ts
 @taxonlabs/composite
@@ -90,7 +90,7 @@ const text = await page.text();
 await page.save(text, 'Testing Composite');
 ```
 
-Composite should also support wrapping an existing `mwn` instance:
+Composite also supports wrapping an existing `mwn` instance:
 
 ```ts
 import { Composite } from '@taxonlabs/composite/mwn';
@@ -111,7 +111,6 @@ export async function readPage(wiki: Wiki, title: string) {
 
 export async function readSiteInfo(wiki: Wiki) {
   return wiki.query({
-    action: 'query',
     meta: 'siteinfo'
   });
 }

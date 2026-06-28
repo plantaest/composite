@@ -53,7 +53,6 @@ For `/mw`, use a fake `mw.Api`-like object:
 ```ts
 const fakeApi = {
   get: vi.fn(),
-  post: vi.fn(),
   postWithToken: vi.fn()
 };
 ```
@@ -62,7 +61,7 @@ For `/mwn`, use a fake `mwn`-like object:
 
 ```ts
 const fakeBot = {
-  query: vi.fn(),
+  request: vi.fn(),
   Page: vi.fn()
 };
 ```
@@ -78,18 +77,18 @@ Example shape:
 ```ts
 export function describeWikiContract(name: string, createWiki: () => Wiki) {
   describe(name, () => {
-    it("creates a page object", () => {
+    it('creates a page object', () => {
       const wiki = createWiki();
-      const page = wiki.page("Wikipedia:Sandbox");
+      const page = wiki.page('Wikipedia:Sandbox');
 
-      expect(page.title()).toBe("Wikipedia:Sandbox");
+      expect(page.title()).toBe('Wikipedia:Sandbox');
     });
 
-    it("reads page text", async () => {
+    it('reads page text', async () => {
       const wiki = createWiki();
-      const text = await wiki.page("Wikipedia:Sandbox").text();
+      const text = await wiki.page('Wikipedia:Sandbox').text();
 
-      expect(text).toBe("Hello");
+      expect(text).toBe('Hello');
     });
   });
 }
@@ -98,9 +97,9 @@ export function describeWikiContract(name: string, createWiki: () => Wiki) {
 Then run:
 
 ```ts
-describeWikiContract("mock runtime", createMockWiki);
-describeWikiContract("mw runtime", createMockedMwWiki);
-describeWikiContract("mwn runtime", createMockedMwnWiki);
+describeWikiContract('mock runtime', createMockWiki);
+describeWikiContract('mw runtime', createMockedMwWiki);
+describeWikiContract('mwn runtime', createMockedMwnWiki);
 ```
 
 ### 4. Wikitext utility tests
@@ -146,10 +145,10 @@ Do not make live integration tests a blocker for the first milestone.
 
 Composite should provide testing utilities for downstream applications.
 
-Planned import:
+Import:
 
 ```ts
-import { createMockWiki } from "@taxonlabs/composite/testing";
+import { createMockWiki } from '@taxonlabs/composite/testing';
 ```
 
 Example usage:
@@ -157,101 +156,26 @@ Example usage:
 ```ts
 const wiki = createMockWiki({
   pages: {
-    "Wikipedia:Sandbox": "Hello world"
+    'Wikipedia:Sandbox': 'Hello world'
   }
 });
 
-const text = await wiki.page("Wikipedia:Sandbox").text();
+const text = await wiki.page('Wikipedia:Sandbox').text();
 ```
 
 This is useful for Taxon Labs applications that want to test logic against the `Wiki` interface without contacting a real wiki.
 
-## Milestone test coverage
+## Milestone test scope
 
-Keep tests small. The goal is to lock down architecture and adapter contracts one vertical slice at a time, not to test the whole SDK up front.
+Keep milestone tests small. The goal is to lock down architecture and adapter contracts one vertical slice at a time, not to test the whole SDK up front.
 
-### Foundation tests
+Each milestone document should define its own exact test checklist. This strategy document only defines the durable pattern:
 
-The foundation milestone should include tests for:
+- add or extend contract tests for new shared API behavior;
+- add `/mw` adapter tests for request shape and response normalization;
+- add `/mwn` adapter tests for delegation and response normalization;
+- add `/testing` tests when mock behavior changes;
+- keep import and bundle boundary tests passing;
+- avoid live integration tests unless the milestone explicitly requires them.
 
-```text
-Root/core:
-- root import does not expose runtime factories
-- RuntimeType
-- UnsupportedRuntimeError
-
-/mw:
-- Composite.current(config)
-- Composite.connect(config)
-- Composite.from(api, config)
-- wiki.runtime().type === "mw"
-- wiki.page(title).title()
-- page.text() maps to mw.Api request shape
-
-/mwn:
-- Composite.create(config) or Composite.from(bot)
-- wiki.runtime().type === "mwn"
-- wiki.page(title).title()
-- page.text() delegates to mwn page.text()
-
-/testing:
-- createMockWiki()
-- mock page.title()
-- mock page.text()
-```
-
-### Query and save tests
-
-The query and save milestone should include tests for:
-
-```text
-Contract:
-- wiki.query(params) returns the configured query response
-- page.save(text, summary?, options?) returns a minimal save result
-
-/mw:
-- wiki.query(params) maps to mw.Api#get
-- page.save(text, summary?, options?) maps to an edit request with a CSRF token
-- page.save(text) omits summary from the edit request
-
-/mwn:
-- wiki.query(params) delegates to mwn query()
-- page.save(text, summary?, options?) delegates to mwn page.save()
-- page.save(text) works without a summary
-
-/testing:
-- mock wiki.query()
-- mock page.save()
-- mock page.save() updates stored page text
-```
-
-### Page read basics tests
-
-The page read basics milestone should include tests for:
-
-```text
-Contract:
-- page.info() returns normalized page info
-- page.exists() matches page.info().exists
-- page.categories() returns category titles
-- page.templates() returns template titles
-- page.links() returns linked page titles
-
-/mw:
-- page.info() maps to an Action API page-info request
-- page.exists() uses page-info missing state
-- page.categories(), page.templates(), and page.links() map to page relationship requests
-- relationship methods do not accidentally expose only the first paginated batch
-
-/mwn:
-- page.info() delegates to an mwn page/query helper
-- page.exists() delegates to an mwn page existence helper or equivalent query
-- page.categories(), page.templates(), and page.links() delegate to mwn page helpers where practical
-
-/testing:
-- mock page.info()
-- mock page.exists()
-- mock page.categories()
-- mock page.templates()
-- mock page.links()
-```
+When a milestone touches an existing API, update the existing contract and adapter tests instead of creating a parallel milestone-only test suite.

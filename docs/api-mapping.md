@@ -60,7 +60,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
-| Runtime information | `wiki.runtime()` | Return `{ type: "mw" }` | Return `{ type: "mwn" }` | both | tested | unit, contract | Keep runtime access explicit and narrow. |
+| Runtime information | `wiki.runtime()` | Return `{ type: 'mw' }` | Return `{ type: 'mwn' }` | both | tested | unit, contract | Keep runtime access explicit and narrow. |
 | Current wiki | `Composite.current(config?)` | Build a wiki from current `mw.config`, `mw.user`, and `new mw.Api()` | unsupported | frontend-only | tested | adapter | Main frontend entrypoint. |
 | Connect frontend wiki | `Composite.connect(config)` | Requires `serverName` and uses `mw.ForeignApi` | unsupported | frontend-only | tested | adapter | Needed for cross-wiki frontend tools. |
 | Create mwn wiki | `Composite.create(config)` | unsupported | Initialize an mwn instance with `Mwn.init(config)` | server-only | implemented | adapter | Main server entrypoint; live behavior is not integration-tested yet. |
@@ -76,8 +76,8 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
-| Query Action API | `wiki.query(params)` | `api.get(params)` | `bot.query(params)` | both | tested | adapter, contract | Query is GET-like in the first implementation. |
-| Request API | `wiki.request(params)` | `api.ajax(params)` / `api.post(params)` policy | `bot.request(params)` | both | needs-design | adapter | Distinction from `query` must be explicit. |
+| Request API | `wiki.request(params)` | `api.get(params)` | `bot.request(params)` | both | tested | adapter, contract | Generic GET-like Action API primitive in the second milestone. |
+| Query Action API | `wiki.query(params)` | `api.get(Object.assign({ action: 'query' }, params))` | `bot.request(Object.assign({ action: 'query' }, params))` | both | tested | adapter, contract | mwn-style helper; callers should use `request` for non-query actions. |
 | Raw request | `wiki.rawRequest(params)` | Possibly direct `mw.Api` call | `bot.rawRequest(params)` | partial/server-first | needs-design | adapter | Consider keeping as runtime escape hatch. |
 | Continued query | `wiki.continuedQuery(params)` | Loop over `continue` with conservative limits | `bot.continuedQuery(params)` | partial | not-started | adapter, contract | Return shape must be decided. |
 | Continued query generator | `wiki.continuedQueryGen(params)` | Async generator over continuation | `bot.continuedQueryGen(params)` | partial | not-started | adapter, contract | Preferred for large results. |
@@ -110,7 +110,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Current user info | `wiki.userinfo()` | `action=query&meta=userinfo` or `mw.user` + API | `bot.userinfo()` | both | not-started | adapter, contract | Core auth API. |
 | Current user object | `wiki.currentUser()` | Build from current username | Build from `userinfo()` | both | not-started | contract | Convenience API. |
 | User rights/groups | `user.rights()` / `user.groups()` | `userinfo` for current user; user query for others | mwn user/userinfo query | both | needs-design | adapter | Current vs arbitrary user must be clear. |
-| CSRF token | `wiki.getToken("csrf")` | `api.getToken("csrf")` / `postWithToken` | mwn token helper | both | needs-design | adapter | May stay adapter-internal first. |
+| CSRF token | `wiki.getToken('csrf')` | `api.getToken('csrf')` / `postWithToken` | mwn token helper | both | needs-design | adapter | May stay adapter-internal first. |
 | Save option | `wiki.saveOption(name, value)` | `action=options` with token | `bot.saveOption(name, value)` | both | not-started | adapter | Important for app settings. |
 | Save options | `wiki.saveOptions(options)` | `action=options` with multiple changes | `bot.saveOptions(options)` | both | not-started | adapter | Extended. |
 | Browser session | `/mw` current session | Use current logged-in browser user | unsupported | frontend-only | implicit | adapter | No bot login in frontend. |
@@ -168,7 +168,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
-| Save page text | `page.save(text, summary?, options?)` | `api.postWithToken("csrf", { action: "edit", ... })` | `new bot.Page(title).save(text, summary, options)` | both | tested | adapter, contract | Core editing API; live permission behavior is not integration-tested yet. |
+| Save page text | `page.save(text, summary?, options?)` | `api.postWithToken('csrf', { action: 'edit', ... })` | `new bot.Page(title).save(text, summary, options)` | both | tested | adapter, contract | Core editing API; live permission behavior is not integration-tested yet. |
 | Transform edit | `page.edit(transform, config?)` | Read text, apply transform, save with conflict protection | `new bot.Page(title).edit(transform, config)` | both | not-started | unit, adapter, contract | Follow mwn semantics where practical. |
 | Create page | `wiki.create(title, text, summary, options?)` | `action=edit&createonly=1` | `bot.create(...)` | both | not-started | adapter | Extended. |
 | New section | `page.newSection(subject, text, options?)` | `action=edit&section=new` | `bot.newSection(...)` or page helper | both | not-started | adapter | Useful for talk/project pages. |
@@ -269,81 +269,21 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Mock wiki | `createMockWiki(config?)` | Runtime-independent | Runtime-independent | both | tested | unit, contract | `/testing` subpath. |
 | Mock page | `createMockPage(...)` | Runtime-independent | Runtime-independent | both | not-started | unit | Extended. |
 | Mock user | `createMockUser(...)` | Runtime-independent | Runtime-independent | both | not-started | unit | Extended. |
-| Contract tests | `describeWikiContract(...)` | Test helper consumes MW factory | Test helper consumes MWN factory | both | future | contract | May remain internal. |
+| Contract tests | `describeWikiContract(...)` | Test helper consumes MW factory | Test helper consumes MWN factory | both | tested | contract | Internal helper exists; it is not a public export. |
 | Import boundary | package exports checks | Ensure `/mw` does not import `mwn` | Ensure root does not import runtimes | both | tested | bundle | Critical for frontend bundle size. |
 
 ---
 
-# Suggested implementation order
+# Implementation direction
 
-## Milestone 1: skeleton and first read path
+Milestone documents in `docs/milestones/` define concrete implementation scope.
 
-- Root core interfaces and errors.
-- `/mw` and `/mwn` runtime entrypoints.
-- `wiki.runtime()`.
-- `wiki.page(title)`.
-- `page.title()`.
-- `page.text()`.
-- Basic mock runtime under `/testing`.
-- Adapter and contract tests for the above.
-- Bundle/import boundary check.
+This mapping suggests the general direction:
 
-## Milestone 2: query and save
-
-This milestone is defined by `docs/milestones/02-query-and-save.md`.
-
-- `wiki.query(params)`.
-- `page.save(text, summary?, options?)`.
-- Mock query support in `/testing`.
-- Mock page save behavior in `/testing`.
-- Adapter and contract tests for query and save.
-
-## Milestone 3: page read basics
-
-This milestone is defined by `docs/milestones/03-page-read-basics.md`.
-
-- `page.info()`.
-- `page.exists()`.
-- `page.categories()`.
-- `page.templates()`.
-- `page.links()`.
-
-## Milestone 4: history, discovery, and user basics
-
-- `page.history(...)`.
-- `page.historyGen(...)`.
-- `wiki.search(...)`.
-- `wiki.userinfo()`.
-- `wiki.currentUser()`.
-- `user.info()`.
-- `user.contribs(...)`.
-
-## Milestone 5: editing and review workflows
-
-- `page.edit(...)`.
-- `wiki.getToken(...)` or adapter-internal token policy.
-- `wiki.recentChanges(...)`.
-- `wiki.compareRevisions(...)`.
-- `wiki.patrol(...)`.
-
-## Milestone 6: extended runtime capabilities
-
-- continuation/generator helpers.
-- `wiki.sparqlQuery(...)`.
-- `page.html()`.
-- `page.logs()` / `wiki.logs()`.
-- watchlist and watch/unwatch.
-- request reliability policy.
-
-## Milestone 7: specialized domains
-
-- EventStreams.
-- Parsoid advanced operations.
-- Upload/file workflows.
-- Wikibase entities.
-- OAuth flows.
-- Global Wikimedia identity APIs.
-- Administrative operations requiring real integration tests.
+- Keep the current foundation stable: runtime entry points, multi-wiki support, request/query, page text, page save, and testing utilities.
+- Complete page read basics next: page info, existence, categories, templates, and links.
+- Design larger API families separately before implementation: revision history, search, current-user/user APIs, edit transforms, continuation helpers, and request reliability.
+- Implement specialized domains only when a real Taxon Labs application needs them: EventStreams, Parsoid, upload/file workflows, Wikibase, OAuth, global identity, and admin-heavy operations.
 
 ---
 

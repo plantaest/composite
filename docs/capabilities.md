@@ -51,8 +51,8 @@ Composite capabilities are grouped by domain. The groups are not implementation 
 
 | Capability | Proposed API | Status | Notes |
 |---|---|---:|---|
-| Query Action API | `wiki.query(params)` | core | Should map to `mw.Api` and `mwn.query`. |
-| Request API | `wiki.request(params)` | core | Exact distinction from `query` must be defined. |
+| Request API | `wiki.request(params)` | core | Generic Action API primitive. |
+| Query Action API | `wiki.query(params)` | core | mwn-style helper that supplies `action=query` through `request()`. |
 | Raw runtime access | `wiki.runtime()` | core | Escape hatch for boundary code. Shared logic should prefer Composite interfaces. |
 | Continued query | `wiki.continuedQuery(params)` | extended | mwn-shaped. Frontend support may be partial. |
 | Continued query generator | `wiki.continuedQueryGen(params)` | extended | Useful for large result sets. |
@@ -124,7 +124,7 @@ Continuation is a first-class concern in MediaWiki API usage. Composite should m
 | Current user object | `wiki.currentUser()` | extended | Optional convenience API. |
 | User rights | `user.rights()` / `wiki.userinfo()` | core | Needed before admin/patrol operations. |
 | User groups | `user.groups()` / `wiki.userinfo()` | core | Needed for permission-aware UI. |
-| CSRF token | `wiki.getToken("csrf")` / token helper | core | API shape needs careful design. |
+| CSRF token | `wiki.getToken('csrf')` / token helper | core | API shape needs careful design. |
 | Save user option | `wiki.saveOption(name, value)` | extended | mwn-shaped. |
 | Save user options | `wiki.saveOptions(options)` | extended | mwn-shaped. |
 | Browser session use | `/mw` current session | core | Frontend should use the current browser session, not emulate bot login. |
@@ -406,13 +406,18 @@ Implement APIs that are:
 Examples:
 
 - `wiki.runtime()`
+- `Composite.wikis(config)`
 - `wiki.page(title)`
 - `page.title()`
 - `page.text()`
+- `wiki.request(params)`
 - `wiki.query(params)`
-- `wiki.userinfo()`
-- `page.history(...)`
-- `wiki.search(...)`
+- `page.save(text, summary?, options?)`
+- `page.info()`
+- `page.exists()`
+- `page.categories()`
+- `page.templates()`
+- `page.links()`
 
 ## Second priority
 
@@ -420,12 +425,13 @@ Implement APIs that are important but have runtime differences.
 
 Examples:
 
-- `page.save(...)`
 - `page.edit(...)`
+- `page.history(...)`
+- `wiki.search(...)`
+- `wiki.userinfo()`
 - `wiki.sparqlQuery(...)`
 - `wiki.recentChanges(...)`
 - `wiki.upload(...)`
-- `Composite.wikis(config)`
 - retry/maxlag/request behavior
 - pagination/generator helpers
 

@@ -15,6 +15,7 @@ Prefer names such as:
 ```ts
 wiki.page(title)
 wiki.user(name)
+wiki.request(params)
 wiki.query(params)
 wiki.search(query, options)
 wiki.sparqlQuery(query, endpoint)
@@ -60,13 +61,13 @@ Do not create runtime instances from the root package.
 Root import:
 
 ```ts
-import type { Wiki } from "@taxonlabs/composite";
+import type { Wiki } from '@taxonlabs/composite';
 ```
 
 MediaWiki frontend runtime:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mw";
+import { Composite } from '@taxonlabs/composite/mw';
 
 const wiki = Composite.current(config);
 ```
@@ -74,7 +75,7 @@ const wiki = Composite.current(config);
 Node.js / Toolforge runtime:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mwn";
+import { Composite } from '@taxonlabs/composite/mwn';
 
 const wiki = await Composite.create(config);
 ```
@@ -117,17 +118,7 @@ Runtime-specific code should live at application boundaries.
 
 ### 9. Keep implementation slices small
 
-Do not implement broad MediaWiki coverage in one milestone.
-
-The foundation milestone started with:
-
-- core interfaces;
-- runtime entry points;
-- `wiki.runtime()`;
-- `wiki.page(title)`;
-- `page.title()`;
-- `page.text()`;
-- minimal testing utilities.
+Each milestone should define a small positive scope and avoid broad MediaWiki coverage.
 
 ### 10. Prefer small vertical slices
 

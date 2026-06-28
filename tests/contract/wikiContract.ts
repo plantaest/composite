@@ -2,12 +2,16 @@ import type {
   Wiki,
   WikiQueryParams,
   WikiQueryResponse,
+  WikiRequestParams,
+  WikiRequestResponse,
 } from '../../src/index.js';
 
 export interface WikiContractOptions {
   expectedText: string;
   queryParams: WikiQueryParams;
   queryResponse: WikiQueryResponse;
+  requestParams: WikiRequestParams;
+  requestResponse: WikiRequestResponse;
   savedText: string;
   title: string;
 }
@@ -33,7 +37,15 @@ export function describeWikiContract(
       );
     });
 
-    it('runs a low-level query', async () => {
+    it('runs an Action API request', async () => {
+      const wiki = createWiki();
+
+      await expect(wiki.request(options.requestParams)).resolves.toEqual(
+        options.requestResponse,
+      );
+    });
+
+    it('runs an Action API query', async () => {
       const wiki = createWiki();
 
       await expect(wiki.query(options.queryParams)).resolves.toEqual(

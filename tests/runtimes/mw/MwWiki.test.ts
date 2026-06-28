@@ -15,6 +15,14 @@ function createFakeApi(text = 'Hello'): FakeMwApi {
         return createSiteInfoResponse();
       }
 
+      if (params.action === 'parse') {
+        return {
+          parse: {
+            title: params.page,
+          },
+        };
+      }
+
       return {
         query: {
           pages: [
@@ -59,10 +67,14 @@ describeWikiContract(
   {
     expectedText: 'Hello',
     queryParams: {
-      action: 'query',
       meta: 'siteinfo',
     },
     queryResponse: createSiteInfoResponse(),
+    requestParams: {
+      action: 'query',
+      meta: 'siteinfo',
+    },
+    requestResponse: createSiteInfoResponse(),
     savedText: 'Updated',
     title: 'Wikipedia:Sandbox',
   },
@@ -190,17 +202,55 @@ describe('mw adapter', () => {
     );
   });
 
-  it('maps wiki.query() to mw.Api#get()', async () => {
+  it('maps wiki.request() to mw.Api#get()', async () => {
     const api = createFakeApi();
     const wiki = Composite.from(api);
     const params = {
-      action: 'query',
+      action: 'parse',
+      page: 'Wikipedia:Sandbox',
+    };
+
+    await expect(wiki.request(params)).resolves.toEqual({
+      parse: {
+        title: 'Wikipedia:Sandbox',
+      },
+    });
+
+    expect(api.get).toHaveBeenCalledWith(params);
+  });
+
+  it('maps wiki.query() to mw.Api#get() with action=query', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+    const params = {
       meta: 'siteinfo',
     };
 
     await expect(wiki.query(params)).resolves.toEqual(createSiteInfoResponse());
 
-    expect(api.get).toHaveBeenCalledWith(params);
+    expect(api.get).toHaveBeenCalledWith({
+      action: 'query',
+      meta: 'siteinfo',
+    });
+  });
+
+  it('lets explicit action override wiki.query() action', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+
+    await expect(
+      wiki.query({
+        action: 'parse',
+        page: 'Wikipedia:Sandbox',
+        meta: 'siteinfo',
+      }),
+    ).resolves.toEqual(createSiteInfoResponse());
+
+    expect(api.get).toHaveBeenCalledWith({
+      action: 'parse',
+      page: 'Wikipedia:Sandbox',
+      meta: 'siteinfo',
+    });
   });
 
   it('maps page.text() to a MediaWiki revisions query', async () => {

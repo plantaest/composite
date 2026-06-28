@@ -8,7 +8,7 @@ describeWikiContract(
       pages: {
         'Wikipedia:Sandbox': 'Hello',
       },
-      queries: [
+      requests: [
         {
           match: {
             action: 'query',
@@ -27,10 +27,20 @@ describeWikiContract(
   {
     expectedText: 'Hello',
     queryParams: {
-      action: 'query',
       meta: 'siteinfo',
     },
     queryResponse: {
+      query: {
+        general: {
+          sitename: 'Wikipedia',
+        },
+      },
+    },
+    requestParams: {
+      action: 'query',
+      meta: 'siteinfo',
+    },
+    requestResponse: {
       query: {
         general: {
           sitename: 'Wikipedia',
@@ -55,9 +65,48 @@ describe('createMockWiki', () => {
     await expect(wiki.page('Missing').text()).resolves.toBe('');
   });
 
-  it('returns configured query responses', async () => {
+  it('returns configured request responses', async () => {
     const wiki = createMockWiki({
-      queries: [
+      requests: [
+        {
+          match: {
+            action: 'query',
+            meta: 'siteinfo',
+          },
+          response: {
+            query: {
+              general: {
+                sitename: 'Wikipedia',
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    await expect(
+      wiki.request({
+        action: 'query',
+        meta: 'siteinfo',
+      }),
+    ).resolves.toEqual({
+      query: {
+        general: {
+          sitename: 'Wikipedia',
+        },
+      },
+    });
+  });
+
+  it('returns an empty object for unmatched requests', async () => {
+    const wiki = createMockWiki();
+
+    await expect(wiki.request({ action: 'query' })).resolves.toEqual({});
+  });
+
+  it('runs wiki.query() through request semantics', async () => {
+    const wiki = createMockWiki({
+      requests: [
         {
           match: {
             action: 'query',
@@ -76,7 +125,6 @@ describe('createMockWiki', () => {
 
     await expect(
       wiki.query({
-        action: 'query',
         meta: 'siteinfo',
       }),
     ).resolves.toEqual({
@@ -86,12 +134,6 @@ describe('createMockWiki', () => {
         },
       },
     });
-  });
-
-  it('returns an empty object for unmatched queries', async () => {
-    const wiki = createMockWiki();
-
-    await expect(wiki.query({ action: 'query' })).resolves.toEqual({});
   });
 
   it('updates page text when saving', async () => {

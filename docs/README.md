@@ -20,14 +20,14 @@ Composite follows a lightweight spec-driven development workflow:
 2. Record important design choices in `docs/decisions/`.
 3. Define the next implementation slice in `docs/milestones/`.
 4. Implement the slice with contract, adapter, and boundary tests.
-5. Update policy, support, mapping, and milestone docs when public behavior changes.
+5. Update source, tests, and the affected docs when public behavior changes.
 
 This process should stay lightweight. Do not create decision records for every small code change; use them when the reasoning would be useful later.
 
 ## Milestones
 
 - `milestones/01-foundation.md`: completed foundation milestone.
-- `milestones/02-query-and-save.md`: completed query and save milestone.
+- `milestones/02-query-and-save.md`: completed request, query, and save milestone.
 - `milestones/03-page-read-basics.md`: planned page read basics milestone.
 
 ## Standing policy
@@ -44,7 +44,7 @@ This process should stay lightweight. Do not create decision records for every s
 ## Roadmap
 
 - `capabilities.md`: high-level capability roadmap.
-- `api-mapping.md`: provisional adapter mapping and implementation order.
+- `api-mapping.md`: provisional adapter mapping and general implementation direction.
 
 ## Contributor guides
 

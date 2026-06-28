@@ -6,13 +6,13 @@ The main goal is to keep frontend bundles small and prevent server-only dependen
 
 ## Package strategy
 
-Initial strategy:
+Current strategy:
 
 ```text
 Single package + subpath exports
 ```
 
-Planned entry points:
+Package entry points:
 
 ```ts
 @taxonlabs/composite
@@ -32,8 +32,8 @@ The repository should still be structured so it can be split into packages later
 The root import must stay lightweight:
 
 ```ts
-import type { Wiki, Page, User, Wikis } from "@taxonlabs/composite";
-import { CompositeError } from "@taxonlabs/composite";
+import type { Wiki, Page, User, Wikis } from '@taxonlabs/composite';
+import { CompositeError } from '@taxonlabs/composite';
 ```
 
 The root import should export only:
@@ -56,35 +56,35 @@ The root import must not export:
 MediaWiki frontend runtime:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mw";
+import { Composite } from '@taxonlabs/composite/mw';
 ```
 
 Node.js / Toolforge runtime:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mwn";
+import { Composite } from '@taxonlabs/composite/mwn';
 ```
 
 Runtime imports must be explicit. Do not auto-detect runtime from the root package.
 
 ## Utility imports
 
-Wikitext utilities:
+Wikitext utilities, after they are implemented:
 
 ```ts
-import { parseTemplates, parseLinks } from "@taxonlabs/composite/wikitext";
+import { parseTemplates, parseLinks } from '@taxonlabs/composite/wikitext';
 ```
 
-EventStreams utilities:
+EventStreams utilities, after they are implemented:
 
 ```ts
-import { createEventStream } from "@taxonlabs/composite/streams";
+import { createEventStream } from '@taxonlabs/composite/streams';
 ```
 
 Testing utilities:
 
 ```ts
-import { createMockWiki } from "@taxonlabs/composite/testing";
+import { createMockWiki } from '@taxonlabs/composite/testing';
 ```
 
 ## Dependency boundaries
@@ -115,7 +115,7 @@ src/streams/**
 
 ## Package exports
 
-Planned `package.json` export shape:
+Current `package.json` export shape:
 
 ```json
 {
@@ -218,7 +218,7 @@ Possible approach:
 ```json
 {
   "peerDependencies": {
-    "mwn": "^x.y.z"
+    "mwn": "^3.0.3"
   },
   "peerDependenciesMeta": {
     "mwn": {

@@ -13,7 +13,7 @@ Read this together with:
 
 The goal is to add common page metadata and relationship reads without starting broader discovery, revision history, or current-user APIs.
 
-Do not implement broad MediaWiki coverage in this milestone.
+This milestone is limited to the APIs and behavior listed below.
 
 ## Goal
 
@@ -179,49 +179,6 @@ Minimum tests:
 - `/mwn` adapter tests verify delegation to fake mwn page/query helpers.
 - import boundary tests still pass.
 
-## Documentation updates
-
-Update these docs when implementing this milestone:
-
-- `README.md`
-- `docs/api-mapping.md`
-- `docs/runtime-support.md`
-- `docs/testing-strategy.md`
-
-The runtime support matrix should move these APIs from `future` to supported:
-
-```text
-page.info()
-page.exists()
-page.categories()
-page.templates()
-page.links()
-```
-
-## Not in this milestone
-
-Do not implement these yet:
-
-```text
-page.history()
-page.historyGen()
-wiki.search()
-wiki.userinfo()
-wiki.currentUser()
-wiki.request()
-wiki.continuedQuery()
-wiki.continuedQueryGen()
-page.backlinks()
-page.subpages()
-page.logs()
-page.purge()
-user.info()
-user.contribs()
-real integration tests against Wikimedia sites
-```
-
-History, search, and user APIs are important, but each needs its own API shape and continuation/session design.
-
 ## Definition of done
 
 This milestone is done when:
@@ -234,4 +191,4 @@ This milestone is done when:
 - shared contract tests cover all new page-read methods;
 - runtime adapter tests verify fake runtime calls and response normalization;
 - docs match the implemented API shape;
-- typecheck, build, tests, Biome check, and package audit pass.
+- typecheck, build, tests, and Biome check pass.

@@ -46,3 +46,4 @@ What this enables, limits, or postpones.
 - `0011-use-types-mediawiki-at-mw-boundaries.md`
 - `0012-record-lightweight-sdd-decisions-in-repo.md`
 - `0013-split-page-read-basics-from-broader-third-milestone.md`
+- `0014-make-wiki-query-a-semantic-query-helper.md`

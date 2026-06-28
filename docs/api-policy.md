@@ -30,8 +30,8 @@ Prefer mwn-like names:
 ```ts
 wiki.page(title)
 wiki.user(name)
-wiki.query(params)
 wiki.request(params)
+wiki.query(params)
 wiki.search(query, options)
 wiki.sparqlQuery(query, endpoint)
 wiki.runtime()
@@ -94,7 +94,7 @@ The root package must not create runtime instances.
 MediaWiki frontend runtime:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mw";
+import { Composite } from '@taxonlabs/composite/mw';
 
 const currentWiki = Composite.current(config);
 const connectedWiki = Composite.connect(config);
@@ -102,7 +102,7 @@ const wrappedWiki = Composite.from(api, config);
 const wikis = Composite.wikis({
   wikis: {
     testwiki: {
-      serverName: "test.wikipedia.org"
+      serverName: 'test.wikipedia.org'
     }
   }
 });
@@ -111,14 +111,14 @@ const wikis = Composite.wikis({
 Node.js / Toolforge runtime:
 
 ```ts
-import { Composite } from "@taxonlabs/composite/mwn";
+import { Composite } from '@taxonlabs/composite/mwn';
 
 const wiki = await Composite.create(config);
 const wrappedWiki = Composite.from(bot, config);
 const wikis = await Composite.wikis({
   wikis: {
     testwiki: {
-      apiUrl: "https://test.wikipedia.org/w/api.php"
+      apiUrl: 'https://test.wikipedia.org/w/api.php'
     }
   }
 });
@@ -135,11 +135,11 @@ const runtime = wiki.runtime();
 Example:
 
 ```ts
-if (runtime.type === "mw") {
+if (runtime.type === 'mw') {
   // Access frontend runtime facilities if needed.
 }
 
-if (runtime.type === "mwn") {
+if (runtime.type === 'mwn') {
   // Access wrapped mwn bot if needed.
 }
 ```
