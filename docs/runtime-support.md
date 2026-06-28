@@ -39,7 +39,7 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Request | `wiki.request(params)` | supported | supported | Generic GET-like Action API primitive in the second milestone. |
 | Query | `wiki.query(params)` | supported | supported | mwn-style helper that supplies `action=query` through `request()`. |
 | Page title | `page.title()` | supported | supported | First milestone. |
-| Page info | `page.info()` | future | future | Planned for page read basics. |
+| Page info | `page.info()` | supported | supported | Normalizes Action API page metadata, including title normalization and redirects. |
 | Page existence | `page.exists()` | future | future | Planned for page read basics. |
 | Page text | `page.text()` | supported | supported | First milestone. |
 | Save page | `page.save(text, summary?, options?)` | supported | supported | Portable if user has rights and token/session are available. |

@@ -1,4 +1,5 @@
 import type {
+  PageInfo,
   Wiki,
   WikiQueryParams,
   WikiQueryResponse,
@@ -8,6 +9,7 @@ import type {
 
 export interface WikiContractOptions {
   expectedText: string;
+  pageInfo: PageInfo;
   queryParams: WikiQueryParams;
   queryResponse: WikiQueryResponse;
   requestParams: WikiRequestParams;
@@ -34,6 +36,14 @@ export function describeWikiContract(
 
       await expect(wiki.page(options.title).text()).resolves.toBe(
         options.expectedText,
+      );
+    });
+
+    it('reads page info', async () => {
+      const wiki = createWiki();
+
+      await expect(wiki.page(options.title).info()).resolves.toEqual(
+        options.pageInfo,
       );
     });
 

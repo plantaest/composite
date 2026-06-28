@@ -50,15 +50,30 @@ Add a lightweight shared `PageInfo` type:
 ```ts
 export interface PageInfo {
   title: string;
+  sourceTitle: string;
+  exists: boolean;
+
   pageId?: number;
   namespace?: number;
-  exists: boolean;
   missing?: boolean;
+  normalized?: boolean;
   redirect?: boolean;
+
+  contentModel?: string;
+  pageLanguage?: string;
+  touched?: string;
+  lastRevisionId?: number;
+  length?: number;
 }
 ```
 
-`PageInfo` is intentionally small. It should expose the page identity and existence state that Composite can normalize across runtimes without committing to a full MediaWiki page-info model.
+`PageInfo` exposes normalized page identity, existence state, and common Action API `prop=info` metadata.
+
+`title` is the effective title returned by MediaWiki. `sourceTitle` is the title used to create the `Page` object.
+
+For example, on test.wikipedia.org, `wiki.page('WP:Sandbox').info()` may return `title: 'Wikipedia:Sandbox'`, `sourceTitle: 'WP:Sandbox'`, and `normalized: true`.
+
+For a redirect such as `wiki.page('Quandong').info()` on vi.wikipedia.org, Composite follows redirects in this milestone and may return `title: 'Santalum acuminatum'`, `sourceTitle: 'Quandong'`, and `redirect: true`.
 
 ## `page.info()`
 
@@ -76,7 +91,7 @@ info.exists;
 Runtime mapping:
 
 - `/mw`: query the Action API page info endpoint through `mw.Api`.
-- `/mwn`: delegate to an mwn page or query helper where practical.
+- `/mwn`: query the same Action API page info shape through mwn.
 - `/testing`: return configured page info or derive minimal info from configured mock pages.
 
 For a missing page, `exists` should be `false`, `missing` should be `true`, and `pageId` should be absent.

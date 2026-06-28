@@ -1,4 +1,4 @@
-import type { PageSaveOptions, PageSaveResult } from './types.js';
+import type { PageInfo, PageSaveOptions, PageSaveResult } from './types.js';
 
 /**
  * Shared page contract for reading page-level data.
@@ -13,6 +13,11 @@ export interface Page {
    * Read the current page text.
    */
   text(): Promise<string>;
+
+  /**
+   * Read normalized page metadata.
+   */
+  info(): Promise<PageInfo>;
 
   /**
    * Save full page text with an optional edit summary.

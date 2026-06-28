@@ -146,7 +146,7 @@ Continuation is a first-class concern in MediaWiki API usage. Composite should m
 | Page object | `wiki.page(title)` | core | Primary domain object. |
 | Page title | `page.title()` | core | First milestone API. |
 | Page existence | `page.exists()` | core | Useful before edit/create flows. |
-| Page metadata | `page.info()` | core | Should include page ID, namespace, title, redirect, missing status where possible. |
+| Page metadata | `page.info()` | core | Should include effective/source title, existence, page ID, namespace, redirects, and common page metadata where possible. |
 | Page wikitext | `page.text()` | core | First read capability. |
 | Page HTML | `page.html()` | core | Likely Parsoid-backed or parse-backed depending runtime and policy. |
 | Page JSON content | `page.json()` | extended | Needed by JSON pages and structured content utilities. |

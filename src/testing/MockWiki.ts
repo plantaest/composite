@@ -1,5 +1,6 @@
 import type { Runtime } from '../core/Runtime.js';
 import type {
+  PageInfo,
   WikiQueryParams,
   WikiQueryResponse,
   WikiRequestParams,
@@ -16,6 +17,7 @@ export interface MockRequest {
 
 export interface MockWikiConfig {
   pages?: Record<string, string>;
+  pageInfo?: Record<string, PageInfo>;
   requests?: MockRequest[];
 }
 
@@ -25,10 +27,12 @@ export function createMockWiki(config: MockWikiConfig = {}): MockWiki {
 
 export class MockWiki implements Wiki {
   private readonly pages: Record<string, string>;
+  private readonly pageInfo: Record<string, PageInfo>;
   private readonly requests: MockRequest[];
 
   constructor(config: MockWikiConfig = {}) {
     this.pages = config.pages ?? {};
+    this.pageInfo = config.pageInfo ?? {};
     this.requests = config.requests ?? [];
   }
 
@@ -37,7 +41,7 @@ export class MockWiki implements Wiki {
   }
 
   page(title: string): MockPage {
-    return new MockPage(title, this.pages);
+    return new MockPage(title, this.pages, this.pageInfo);
   }
 
   async request(params: WikiRequestParams): Promise<WikiRequestResponse> {

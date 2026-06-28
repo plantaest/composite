@@ -11,6 +11,10 @@ type FakeMwApi = MwApi & {
 function createFakeApi(text = 'Hello'): FakeMwApi {
   const api = {
     get: vi.fn(async (params: Record<string, unknown>) => {
+      if (params.prop === 'info') {
+        return createPageInfoResponse();
+      }
+
       if (params.meta === 'siteinfo') {
         return createSiteInfoResponse();
       }
@@ -51,6 +55,25 @@ function createFakeApi(text = 'Hello'): FakeMwApi {
   return api as unknown as FakeMwApi;
 }
 
+function createPageInfoResponse() {
+  return {
+    query: {
+      pages: [
+        {
+          pageid: 107092,
+          ns: 4,
+          title: 'Wikipedia:Sandbox',
+          contentmodel: 'wikitext',
+          pagelanguage: 'en',
+          touched: '2026-06-20T21:00:50Z',
+          lastrevid: 747754,
+          length: 82,
+        },
+      ],
+    },
+  };
+}
+
 function createSiteInfoResponse() {
   return {
     query: {
@@ -66,6 +89,18 @@ describeWikiContract(
   () => Composite.from(createFakeApi(), { wikiId: 'testwiki' }),
   {
     expectedText: 'Hello',
+    pageInfo: {
+      title: 'Wikipedia:Sandbox',
+      sourceTitle: 'Wikipedia:Sandbox',
+      exists: true,
+      pageId: 107092,
+      namespace: 4,
+      contentModel: 'wikitext',
+      pageLanguage: 'en',
+      touched: '2026-06-20T21:00:50Z',
+      lastRevisionId: 747754,
+      length: 82,
+    },
     queryParams: {
       meta: 'siteinfo',
     },
@@ -268,6 +303,139 @@ describe('mw adapter', () => {
       rvprop: 'content',
       rvslots: 'main',
       formatversion: 2,
+    });
+  });
+
+  it('maps page.info() to a MediaWiki info query', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+
+    await expect(wiki.page('Wikipedia:Sandbox').info()).resolves.toEqual({
+      title: 'Wikipedia:Sandbox',
+      sourceTitle: 'Wikipedia:Sandbox',
+      exists: true,
+      pageId: 107092,
+      namespace: 4,
+      contentModel: 'wikitext',
+      pageLanguage: 'en',
+      touched: '2026-06-20T21:00:50Z',
+      lastRevisionId: 747754,
+      length: 82,
+    });
+
+    expect(api.get).toHaveBeenCalledWith({
+      action: 'query',
+      prop: 'info',
+      titles: 'Wikipedia:Sandbox',
+      redirects: true,
+      formatversion: 2,
+    });
+  });
+
+  it('normalizes page.info() for title normalization', async () => {
+    const api = {
+      get: vi.fn(async () => ({
+        query: {
+          normalized: [
+            {
+              fromencoded: false,
+              from: 'WP:Sandbox',
+              to: 'Wikipedia:Sandbox',
+            },
+          ],
+          pages: [
+            {
+              pageid: 107092,
+              ns: 4,
+              title: 'Wikipedia:Sandbox',
+            },
+          ],
+        },
+      })),
+      postWithToken: vi.fn(),
+    };
+    const wiki = Composite.from(api as unknown as MwApi);
+
+    await expect(wiki.page('WP:Sandbox').info()).resolves.toEqual({
+      title: 'Wikipedia:Sandbox',
+      sourceTitle: 'WP:Sandbox',
+      exists: true,
+      pageId: 107092,
+      namespace: 4,
+      normalized: true,
+    });
+  });
+
+  it('normalizes page.info() for redirects', async () => {
+    const api = {
+      get: vi.fn(async () => ({
+        query: {
+          redirects: [
+            {
+              from: 'Quandong',
+              to: 'Santalum acuminatum',
+            },
+          ],
+          pages: [
+            {
+              pageid: 2323887,
+              ns: 0,
+              title: 'Santalum acuminatum',
+              contentmodel: 'wikitext',
+              pagelanguage: 'vi',
+              touched: '2026-06-25T21:13:04Z',
+              lastrevid: 75209624,
+              length: 2048,
+            },
+          ],
+        },
+      })),
+      postWithToken: vi.fn(),
+    };
+    const wiki = Composite.from(api as unknown as MwApi);
+
+    await expect(wiki.page('Quandong').info()).resolves.toEqual({
+      title: 'Santalum acuminatum',
+      sourceTitle: 'Quandong',
+      exists: true,
+      pageId: 2323887,
+      namespace: 0,
+      redirect: true,
+      contentModel: 'wikitext',
+      pageLanguage: 'vi',
+      touched: '2026-06-25T21:13:04Z',
+      lastRevisionId: 75209624,
+      length: 2048,
+    });
+  });
+
+  it('normalizes page.info() for missing pages', async () => {
+    const api = {
+      get: vi.fn(async () => ({
+        query: {
+          pages: [
+            {
+              ns: 4,
+              title: 'Wikipedia:Missing',
+              missing: true,
+              contentmodel: 'wikitext',
+              pagelanguage: 'en',
+            },
+          ],
+        },
+      })),
+      postWithToken: vi.fn(),
+    };
+    const wiki = Composite.from(api as unknown as MwApi);
+
+    await expect(wiki.page('Wikipedia:Missing').info()).resolves.toEqual({
+      title: 'Wikipedia:Missing',
+      sourceTitle: 'Wikipedia:Missing',
+      exists: false,
+      namespace: 4,
+      missing: true,
+      contentModel: 'wikitext',
+      pageLanguage: 'en',
     });
   });
 

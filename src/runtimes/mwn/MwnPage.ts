@@ -1,6 +1,14 @@
 import type { Mwn } from 'mwn';
 import type { Page } from '../../core/Page.js';
-import type { PageSaveOptions, PageSaveResult } from '../../core/types.js';
+import type {
+  PageInfo,
+  PageSaveOptions,
+  PageSaveResult,
+} from '../../core/types.js';
+import {
+  normalizePageInfo,
+  type PageInfoQueryResponse,
+} from '../../internal/mediawiki/pageInfo.js';
 
 export class MwnPage implements Page {
   constructor(
@@ -14,6 +22,18 @@ export class MwnPage implements Page {
 
   text(): Promise<string> {
     return new this.bot.Page(this.pageTitle).text();
+  }
+
+  async info(): Promise<PageInfo> {
+    const response = await this.bot.request({
+      action: 'query',
+      prop: 'info',
+      titles: this.pageTitle,
+      redirects: true,
+      formatversion: 2,
+    });
+
+    return normalizePageInfo(this.pageTitle, response as PageInfoQueryResponse);
   }
 
   async save(

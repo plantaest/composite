@@ -47,3 +47,4 @@ What this enables, limits, or postpones.
 - `0012-record-lightweight-sdd-decisions-in-repo.md`
 - `0013-split-page-read-basics-from-broader-third-milestone.md`
 - `0014-make-wiki-query-a-semantic-query-helper.md`
+- `0015-use-composite-owned-page-info-normalization.md`

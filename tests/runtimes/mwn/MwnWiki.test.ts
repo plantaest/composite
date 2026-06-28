@@ -4,7 +4,13 @@ import { describeWikiContract } from '../../contract/wikiContract.js';
 
 function createFakeBot(text = 'Hello'): Mwn {
   return {
-    request: vi.fn(async () => createSiteInfoResponse()),
+    request: vi.fn(async (params: Record<string, unknown>) => {
+      if (params.prop === 'info') {
+        return createPageInfoResponse();
+      }
+
+      return createSiteInfoResponse();
+    }),
     Page: vi.fn(function Page(title: string) {
       return {
         text: vi.fn(async () => `${text} from ${title}`),
@@ -16,6 +22,25 @@ function createFakeBot(text = 'Hello'): Mwn {
       };
     }),
   } as unknown as Mwn;
+}
+
+function createPageInfoResponse() {
+  return {
+    query: {
+      pages: [
+        {
+          pageid: 107092,
+          ns: 4,
+          title: 'Wikipedia:Sandbox',
+          contentmodel: 'wikitext',
+          pagelanguage: 'en',
+          touched: '2026-06-20T21:00:50Z',
+          lastrevid: 747754,
+          length: 82,
+        },
+      ],
+    },
+  };
 }
 
 function createSiteInfoResponse() {
@@ -33,6 +58,18 @@ describeWikiContract(
   () => Composite.from(createFakeBot('Hello')),
   {
     expectedText: 'Hello from Wikipedia:Sandbox',
+    pageInfo: {
+      title: 'Wikipedia:Sandbox',
+      sourceTitle: 'Wikipedia:Sandbox',
+      exists: true,
+      pageId: 107092,
+      namespace: 4,
+      contentModel: 'wikitext',
+      pageLanguage: 'en',
+      touched: '2026-06-20T21:00:50Z',
+      lastRevisionId: 747754,
+      length: 82,
+    },
     queryParams: {
       meta: 'siteinfo',
     },
@@ -73,6 +110,65 @@ describe('mwn adapter', () => {
 
     expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
     expect(mwnPage.text).toHaveBeenCalledWith();
+  });
+
+  it('maps page.info() to an mwn request', async () => {
+    const bot = createFakeBot();
+    const wiki = Composite.from(bot);
+
+    await expect(wiki.page('Wikipedia:Sandbox').info()).resolves.toEqual({
+      title: 'Wikipedia:Sandbox',
+      sourceTitle: 'Wikipedia:Sandbox',
+      exists: true,
+      pageId: 107092,
+      namespace: 4,
+      contentModel: 'wikitext',
+      pageLanguage: 'en',
+      touched: '2026-06-20T21:00:50Z',
+      lastRevisionId: 747754,
+      length: 82,
+    });
+
+    expect(bot.request).toHaveBeenCalledWith({
+      action: 'query',
+      prop: 'info',
+      titles: 'Wikipedia:Sandbox',
+      redirects: true,
+      formatversion: 2,
+    });
+  });
+
+  it('normalizes redirected page.info() responses', async () => {
+    const bot = {
+      request: vi.fn(async () => ({
+        query: {
+          redirects: [
+            {
+              from: 'Quandong',
+              to: 'Santalum acuminatum',
+            },
+          ],
+          pages: [
+            {
+              pageid: 2323887,
+              ns: 0,
+              title: 'Santalum acuminatum',
+            },
+          ],
+        },
+      })),
+      Page: vi.fn(),
+    } as unknown as Mwn;
+    const wiki = Composite.from(bot);
+
+    await expect(wiki.page('Quandong').info()).resolves.toEqual({
+      title: 'Santalum acuminatum',
+      sourceTitle: 'Quandong',
+      exists: true,
+      pageId: 2323887,
+      namespace: 0,
+      redirect: true,
+    });
   });
 
   it('delegates wiki.request() to the mwn bot', async () => {

@@ -1,5 +1,13 @@
 import type { Page } from '../../core/Page.js';
-import type { PageSaveOptions, PageSaveResult } from '../../core/types.js';
+import type {
+  PageInfo,
+  PageSaveOptions,
+  PageSaveResult,
+} from '../../core/types.js';
+import {
+  normalizePageInfo,
+  type PageInfoQueryResponse,
+} from '../../internal/mediawiki/pageInfo.js';
 import type { MwApi, MwApiParams, MwPageTextResponse } from './mediawiki.js';
 
 export class MwPage implements Page {
@@ -25,6 +33,20 @@ export class MwPage implements Page {
     })) as MwPageTextResponse;
 
     return response.query.pages[0]?.revisions?.[0]?.slots?.main?.content ?? '';
+  }
+
+  async info(): Promise<PageInfo> {
+    // Follows the MediaWiki Action API info module:
+    // https://www.mediawiki.org/wiki/API:Info
+    const response = await this.api.get({
+      action: 'query',
+      prop: 'info',
+      titles: this.pageTitle,
+      redirects: true,
+      formatversion: 2,
+    });
+
+    return normalizePageInfo(this.pageTitle, response as PageInfoQueryResponse);
   }
 
   async save(

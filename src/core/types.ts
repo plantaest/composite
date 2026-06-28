@@ -24,6 +24,79 @@ export interface WikiQueryResponse extends WikiRequestResponse {
   query?: Record<string, unknown>;
 }
 
+export interface PageInfo {
+  /**
+   * Current effective title returned by MediaWiki.
+   *
+   * This may differ from sourceTitle when MediaWiki normalizes a title
+   * (`WP:Sandbox` -> `Wikipedia:Sandbox` on test.wikipedia.org) or follows a
+   * redirect (`Quandong` -> `Santalum acuminatum` on vi.wikipedia.org).
+   */
+  title: string;
+
+  /**
+   * Original title used to create the Page object.
+   */
+  sourceTitle: string;
+
+  /**
+   * True when the effective page exists.
+   *
+   * Missing pages are represented as data, not as errors.
+   */
+  exists: boolean;
+
+  /**
+   * MediaWiki page ID for existing pages.
+   */
+  pageId?: number;
+
+  /**
+   * MediaWiki namespace ID.
+   */
+  namespace?: number;
+
+  /**
+   * True when MediaWiki reports the effective page as missing.
+   */
+  missing?: boolean;
+
+  /**
+   * True when MediaWiki normalized sourceTitle before resolving page info.
+   */
+  normalized?: boolean;
+
+  /**
+   * True when MediaWiki followed a redirect before returning page info.
+   */
+  redirect?: boolean;
+
+  /**
+   * MediaWiki content model, such as `wikitext`.
+   */
+  contentModel?: string;
+
+  /**
+   * MediaWiki page language code, such as `en` or `vi`.
+   */
+  pageLanguage?: string;
+
+  /**
+   * MediaWiki touched timestamp for the effective page.
+   */
+  touched?: string;
+
+  /**
+   * Latest revision ID for the effective page.
+   */
+  lastRevisionId?: number;
+
+  /**
+   * Page length in bytes for the effective page.
+   */
+  length?: number;
+}
+
 export interface PageSaveOptions {
   /**
    * This intentionally starts as a small subset of ApiEditPageParams from

@@ -37,6 +37,7 @@ wiki.sparqlQuery(query, endpoint)
 wiki.runtime()
 
 page.text()
+page.info()
 page.save(text, summary?, options?)
 page.edit(transform, config)
 page.history(props, limit, options)
