@@ -110,7 +110,9 @@ export interface PageSaveResult {
    * Title of the page Composite attempted to save.
    *
    * This result is intentionally minimal until edit response normalization is
-   * designed.
+   * designed. MediaWiki edit responses can include page ID, old/new revision
+   * IDs, timestamps, and other useful fields, but Composite should add those
+   * only after a focused save-result design.
    */
   title: string;
 }

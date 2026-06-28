@@ -68,6 +68,22 @@ const fakeBot = {
 
 Adapter tests should verify mapping, not live network behavior.
 
+### Browser-console reference checks
+
+For `/mw` APIs, it is useful to check behavior directly in a MediaWiki browser console before designing the Composite wrapper.
+
+These checks provide ground-truth examples of:
+
+- request parameter shape;
+- raw `mw.Api` response shape;
+- normalization and redirect behavior;
+- token/edit behavior;
+- frontend runtime limitations.
+
+Browser-console checks are research references, not automated tests. The normal test suite should still use fakes and must not depend on live Wikimedia sites, login state, or network availability.
+
+When a browser-console observation informs a fake response, keep the fixture small and focused. Add a short comment when the observed shape is important for future review.
+
 ### 3. Contract tests
 
 Create a shared test suite for the `Wiki` and `Page` contracts, then run it against multiple implementations.

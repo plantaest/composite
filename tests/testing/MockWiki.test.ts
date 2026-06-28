@@ -15,9 +15,11 @@ describeWikiContract(
             meta: 'siteinfo',
           },
           response: {
+            batchcomplete: true,
             query: {
               general: {
                 sitename: 'Wikipedia',
+                lang: 'en',
               },
             },
           },
@@ -35,9 +37,11 @@ describeWikiContract(
       meta: 'siteinfo',
     },
     queryResponse: {
+      batchcomplete: true,
       query: {
         general: {
           sitename: 'Wikipedia',
+          lang: 'en',
         },
       },
     },
@@ -46,9 +50,11 @@ describeWikiContract(
       meta: 'siteinfo',
     },
     requestResponse: {
+      batchcomplete: true,
       query: {
         general: {
           sitename: 'Wikipedia',
+          lang: 'en',
         },
       },
     },
@@ -132,9 +138,11 @@ describe('createMockWiki', () => {
             meta: 'siteinfo',
           },
           response: {
+            batchcomplete: true,
             query: {
               general: {
                 sitename: 'Wikipedia',
+                lang: 'en',
               },
             },
           },
@@ -148,9 +156,11 @@ describe('createMockWiki', () => {
         meta: 'siteinfo',
       }),
     ).resolves.toEqual({
+      batchcomplete: true,
       query: {
         general: {
           sitename: 'Wikipedia',
+          lang: 'en',
         },
       },
     });
@@ -171,9 +181,11 @@ describe('createMockWiki', () => {
             meta: 'siteinfo',
           },
           response: {
+            batchcomplete: true,
             query: {
               general: {
                 sitename: 'Wikipedia',
+                lang: 'en',
               },
             },
           },
@@ -186,9 +198,11 @@ describe('createMockWiki', () => {
         meta: 'siteinfo',
       }),
     ).resolves.toEqual({
+      batchcomplete: true,
       query: {
         general: {
           sitename: 'Wikipedia',
+          lang: 'en',
         },
       },
     });

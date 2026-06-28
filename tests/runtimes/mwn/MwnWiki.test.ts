@@ -45,9 +45,11 @@ function createPageInfoResponse() {
 
 function createSiteInfoResponse() {
   return {
+    batchcomplete: true as const,
     query: {
       general: {
         sitename: 'Wikipedia',
+        lang: 'en',
       },
     },
   };

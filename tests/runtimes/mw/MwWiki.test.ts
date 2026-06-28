@@ -11,14 +11,6 @@ type FakeMwApi = MwApi & {
 function createFakeApi(text = 'Hello'): FakeMwApi {
   const api = {
     get: vi.fn(async (params: Record<string, unknown>) => {
-      if (params.prop === 'info') {
-        return createPageInfoResponse();
-      }
-
-      if (params.meta === 'siteinfo') {
-        return createSiteInfoResponse();
-      }
-
       if (params.action === 'parse') {
         return {
           parse: {
@@ -27,29 +19,17 @@ function createFakeApi(text = 'Hello'): FakeMwApi {
         };
       }
 
-      return {
-        query: {
-          pages: [
-            {
-              revisions: [
-                {
-                  slots: {
-                    main: {
-                      content: text,
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      };
+      if (params.prop === 'info') {
+        return createPageInfoResponse();
+      }
+
+      if (params.meta === 'siteinfo') {
+        return createSiteInfoResponse();
+      }
+
+      return createPageTextResponse(text);
     }),
-    postWithToken: vi.fn(async () => ({
-      edit: {
-        result: 'Success',
-      },
-    })),
+    postWithToken: vi.fn(async () => createEditResponse()),
   };
 
   return api as unknown as FakeMwApi;
@@ -74,12 +54,57 @@ function createPageInfoResponse() {
   };
 }
 
+// Based on a browser-console mw.Api response from test.wikipedia.org.
+function createPageTextResponse(text: string) {
+  return {
+    batchcomplete: true as const,
+    query: {
+      pages: [
+        {
+          pageid: 107092,
+          ns: 4,
+          title: 'Wikipedia:Sandbox',
+          revisions: [
+            {
+              slots: {
+                main: {
+                  contentmodel: 'wikitext',
+                  contentformat: 'text/x-wiki',
+                  content: text,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
+
+// Compact siteinfo shape observed from test.wikipedia.org.
 function createSiteInfoResponse() {
   return {
+    batchcomplete: true as const,
     query: {
       general: {
         sitename: 'Wikipedia',
+        lang: 'en',
       },
+    },
+  };
+}
+
+// Edit success shape observed after saving Wikipedia:Sandbox on test.wikipedia.org.
+function createEditResponse() {
+  return {
+    edit: {
+      result: 'Success',
+      pageid: 107092,
+      title: 'Wikipedia:Sandbox',
+      contentmodel: 'wikitext',
+      oldrevid: 747754,
+      newrevid: 748800,
+      newtimestamp: '2026-06-28T07:54:59Z',
     },
   };
 }
@@ -241,15 +266,15 @@ describe('mw adapter', () => {
     const api = createFakeApi();
     const wiki = Composite.from(api);
     const params = {
-      action: 'parse',
-      page: 'Wikipedia:Sandbox',
+      action: 'query',
+      meta: 'siteinfo',
+      siprop: 'general',
+      formatversion: 2,
     };
 
-    await expect(wiki.request(params)).resolves.toEqual({
-      parse: {
-        title: 'Wikipedia:Sandbox',
-      },
-    });
+    await expect(wiki.request(params)).resolves.toEqual(
+      createSiteInfoResponse(),
+    );
 
     expect(api.get).toHaveBeenCalledWith(params);
   });
@@ -259,6 +284,8 @@ describe('mw adapter', () => {
     const wiki = Composite.from(api);
     const params = {
       meta: 'siteinfo',
+      siprop: 'general',
+      formatversion: 2,
     };
 
     await expect(wiki.query(params)).resolves.toEqual(createSiteInfoResponse());
@@ -266,6 +293,8 @@ describe('mw adapter', () => {
     expect(api.get).toHaveBeenCalledWith({
       action: 'query',
       meta: 'siteinfo',
+      siprop: 'general',
+      formatversion: 2,
     });
   });
 
@@ -279,7 +308,11 @@ describe('mw adapter', () => {
         page: 'Wikipedia:Sandbox',
         meta: 'siteinfo',
       }),
-    ).resolves.toEqual(createSiteInfoResponse());
+    ).resolves.toEqual({
+      parse: {
+        title: 'Wikipedia:Sandbox',
+      },
+    });
 
     expect(api.get).toHaveBeenCalledWith({
       action: 'parse',
