@@ -140,6 +140,21 @@ describe('mwn adapter', () => {
     });
   });
 
+  it('maps page.exists() through page info', async () => {
+    const bot = createFakeBot();
+    const wiki = Composite.from(bot);
+
+    await expect(wiki.page('Wikipedia:Sandbox').exists()).resolves.toBe(true);
+
+    expect(bot.request).toHaveBeenCalledWith({
+      action: 'query',
+      prop: 'info',
+      titles: 'Wikipedia:Sandbox',
+      redirects: true,
+      formatversion: 2,
+    });
+  });
+
   it('normalizes redirected page.info() responses', async () => {
     const bot = {
       request: vi.fn(async () => ({

@@ -34,6 +34,10 @@ export class MockPage implements Page {
     };
   }
 
+  async exists(): Promise<boolean> {
+    return (await this.info()).exists;
+  }
+
   async save(
     text: string,
     _summary?: string,

@@ -95,6 +95,17 @@ describe('createMockWiki', () => {
     });
   });
 
+  it('derives page existence from page info', async () => {
+    const wiki = createMockWiki({
+      pages: {
+        'Wikipedia:Sandbox': 'Hello',
+      },
+    });
+
+    await expect(wiki.page('Wikipedia:Sandbox').exists()).resolves.toBe(true);
+    await expect(wiki.page('Wikipedia:Missing').exists()).resolves.toBe(false);
+  });
+
   it('returns configured page info', async () => {
     const wiki = createMockWiki({
       pageInfo: {

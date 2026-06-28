@@ -365,6 +365,21 @@ describe('mw adapter', () => {
     });
   });
 
+  it('maps page.exists() through page info', async () => {
+    const api = createFakeApi();
+    const wiki = Composite.from(api);
+
+    await expect(wiki.page('Wikipedia:Sandbox').exists()).resolves.toBe(true);
+
+    expect(api.get).toHaveBeenCalledWith({
+      action: 'query',
+      prop: 'info',
+      titles: 'Wikipedia:Sandbox',
+      redirects: true,
+      formatversion: 2,
+    });
+  });
+
   it('normalizes page.info() for title normalization', async () => {
     const api = {
       get: vi.fn(async () => ({
@@ -470,6 +485,26 @@ describe('mw adapter', () => {
       contentModel: 'wikitext',
       pageLanguage: 'en',
     });
+  });
+
+  it('returns false from page.exists() for missing pages', async () => {
+    const api = {
+      get: vi.fn(async () => ({
+        query: {
+          pages: [
+            {
+              ns: 4,
+              title: 'Wikipedia:Missing',
+              missing: true,
+            },
+          ],
+        },
+      })),
+      postWithToken: vi.fn(),
+    };
+    const wiki = Composite.from(api as unknown as MwApi);
+
+    await expect(wiki.page('Wikipedia:Missing').exists()).resolves.toBe(false);
   });
 
   it('maps page.save() to a csrf edit request', async () => {

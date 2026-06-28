@@ -49,6 +49,10 @@ export class MwPage implements Page {
     return normalizePageInfo(this.pageTitle, response as PageInfoQueryResponse);
   }
 
+  async exists(): Promise<boolean> {
+    return (await this.info()).exists;
+  }
+
   async save(
     text: string,
     summary?: string,

@@ -108,9 +108,9 @@ const exists = await wiki.page('Wikipedia:Sandbox').exists();
 
 Runtime mapping:
 
-- `/mw`: use page-info missing state.
-- `/mwn`: delegate to an mwn page existence helper where practical, or use the same query shape as `page.info()`.
-- `/testing`: return `true` for configured mock pages unless explicit page info marks the page as missing.
+- `/mw`: use `page.info().exists`.
+- `/mwn`: use `page.info().exists`.
+- `/testing`: use `page.info().exists`.
 
 `page.exists()` should not fetch page text.
 

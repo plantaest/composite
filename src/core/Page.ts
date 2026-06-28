@@ -20,6 +20,11 @@ export interface Page {
   info(): Promise<PageInfo>;
 
   /**
+   * Return whether the effective page exists.
+   */
+  exists(): Promise<boolean>;
+
+  /**
    * Save full page text with an optional edit summary.
    */
   save(

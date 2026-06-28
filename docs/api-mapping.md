@@ -128,7 +128,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 |---|---|---|---|---|---|---|---|
 | Page object | `wiki.page(title)` | Return `MwPage` | Return `MwnPage` wrapper | both | tested | contract | Primary domain object. |
 | Page title | `page.title()` | Return stored normalized/original title | Return stored normalized/original title | both | tested | unit, contract | First milestone. |
-| Page existence | `page.exists()` | Query page info/missing | mwn page method or query | both | not-started | adapter, contract | Core. |
+| Page existence | `page.exists()` | Use `page.info().exists` | Use `page.info().exists` | both | tested | adapter, contract | Convenience wrapper over normalized page metadata. |
 | Page metadata | `page.info()` | `action=query&prop=info&redirects=1` | `bot.request()` with the same query shape | both | tested | adapter, contract | Includes effective/source title, existence, page ID, namespace, redirects, and common metadata. |
 | Page wikitext | `page.text()` | `action=query&prop=revisions&rvprop=content` with slots API | `new bot.Page(title).text()` | both | tested | adapter, contract | First milestone. |
 | Page HTML | `page.html()` | Parsoid REST, `action=parse`, or selected policy | mwn parse/Parsoid/custom | both | needs-design | adapter | Keep simple high-level API. |

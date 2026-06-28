@@ -40,7 +40,7 @@ This matrix is provisional. It should be updated as APIs are implemented.
 | Query | `wiki.query(params)` | supported | supported | mwn-style helper that supplies `action=query` through `request()`. |
 | Page title | `page.title()` | supported | supported | First milestone. |
 | Page info | `page.info()` | supported | supported | Normalizes Action API page metadata, including title normalization and redirects. |
-| Page existence | `page.exists()` | future | future | Planned for page read basics. |
+| Page existence | `page.exists()` | supported | supported | Convenience wrapper over `page.info().exists`. |
 | Page text | `page.text()` | supported | supported | First milestone. |
 | Save page | `page.save(text, summary?, options?)` | supported | supported | Portable if user has rights and token/session are available. |
 | Edit transform | `page.edit(transform, config)` | future | future | Should follow mwn semantics where practical. |

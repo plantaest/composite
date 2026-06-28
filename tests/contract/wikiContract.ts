@@ -47,6 +47,14 @@ export function describeWikiContract(
       );
     });
 
+    it('checks page existence', async () => {
+      const wiki = createWiki();
+
+      await expect(wiki.page(options.title).exists()).resolves.toBe(
+        options.pageInfo.exists,
+      );
+    });
+
     it('runs an Action API request', async () => {
       const wiki = createWiki();
 
