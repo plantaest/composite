@@ -40,6 +40,10 @@ export class MwnPage implements Page {
     return (await this.info()).exists;
   }
 
+  categories(): Promise<string[]> {
+    return new this.bot.Page(this.pageTitle).categories();
+  }
+
   async save(
     text: string,
     summary?: string,

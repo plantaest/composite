@@ -7,6 +7,7 @@ describeWikiContract(
   'mwn runtime',
   () => Composite.from(createFakeBot('Hello')),
   {
+    expectedCategories: ['Category:Tests', 'Category:Sandbox pages'],
     expectedText: 'Hello from Wikipedia:Sandbox',
     pageInfo: {
       title: 'Wikipedia:Sandbox',

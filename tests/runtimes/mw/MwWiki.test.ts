@@ -7,6 +7,7 @@ describeWikiContract(
   'mw runtime',
   () => Composite.from(createFakeMwApi(), { wikiId: 'testwiki' }),
   {
+    expectedCategories: ['Category:Tests', 'Category:Sandbox pages'],
     expectedText: 'Hello',
     pageInfo: {
       title: 'Wikipedia:Sandbox',

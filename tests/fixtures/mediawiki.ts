@@ -46,6 +46,32 @@ export function createPageTextResponse(text: string) {
   };
 }
 
+// Compact prop=categories shape observed from the MediaWiki Action API.
+export function createPageCategoriesResponse() {
+  return {
+    batchcomplete: true as const,
+    query: {
+      pages: [
+        {
+          pageid: 107092,
+          ns: 4,
+          title: 'Wikipedia:Sandbox',
+          categories: [
+            {
+              ns: 14,
+              title: 'Category:Tests',
+            },
+            {
+              ns: 14,
+              title: 'Category:Sandbox pages',
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
+
 // Edit success shape observed after saving Wikipedia:Sandbox on test.wikipedia.org.
 export function createEditResponse() {
   return {

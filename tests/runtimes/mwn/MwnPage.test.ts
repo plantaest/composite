@@ -72,6 +72,33 @@ describe('MwnPage', () => {
     });
   });
 
+  describe('Page.categories()', () => {
+    it('delegates to the mwn page object', async () => {
+      const mwnPage = {
+        categories: vi.fn(async () => [
+          'Category:Tests',
+          'Category:Sandbox pages',
+        ]),
+        text: vi.fn(),
+        save: vi.fn(),
+      };
+      const bot = {
+        request: vi.fn(),
+        Page: vi.fn(function Page() {
+          return mwnPage;
+        }),
+      } as unknown as Mwn;
+      const wiki = Composite.from(bot);
+
+      await expect(
+        wiki.page('Wikipedia:Sandbox').categories(),
+      ).resolves.toEqual(['Category:Tests', 'Category:Sandbox pages']);
+
+      expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
+      expect(mwnPage.categories).toHaveBeenCalledWith();
+    });
+  });
+
   describe('Page.save()', () => {
     it('delegates to the mwn page object', async () => {
       const mwnPage = {

@@ -9,6 +9,7 @@ import {
   type PageInfoQueryResponse,
 } from '../../internal/mediawiki/pageInfo.js';
 import type { PageTextQueryResponse } from '../../internal/mediawiki/pageText.js';
+import { collectPageTitleList } from '../../internal/mediawiki/pageTitleList.js';
 import { omitUndefinedFields } from '../../internal/object.js';
 import type { MwApi, MwApiParams } from './mediawiki.js';
 
@@ -53,6 +54,19 @@ export class MwPage implements Page {
 
   async exists(): Promise<boolean> {
     return (await this.info()).exists;
+  }
+
+  categories(): Promise<string[]> {
+    // Follows the MediaWiki Action API categories prop:
+    // https://www.mediawiki.org/wiki/API:Categories
+    return collectPageTitleList(
+      async (params) => (params as MwApiParams),
+      this.pageTitle,
+      {
+        prop: 'categories',
+        limitParam: 'cllimit',
+      },
+    );
   }
 
   async save(

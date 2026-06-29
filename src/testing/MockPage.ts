@@ -10,6 +10,7 @@ export class MockPage implements Page {
     private readonly pageTitle: string,
     private readonly pages: Record<string, string>,
     private readonly pageInfo: Record<string, PageInfo>,
+    private readonly categoriesByTitle: Record<string, string[]>,
   ) {}
 
   title(): string {
@@ -36,6 +37,10 @@ export class MockPage implements Page {
 
   async exists(): Promise<boolean> {
     return (await this.info()).exists;
+  }
+
+  async categories(): Promise<string[]> {
+    return this.categoriesByTitle[this.pageTitle] ?? [];
   }
 
   async save(

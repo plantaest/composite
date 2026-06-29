@@ -5,6 +5,9 @@ describeWikiContract(
   'mock runtime',
   () =>
     createMockWiki({
+      categories: {
+        'Wikipedia:Sandbox': ['Category:Tests', 'Category:Sandbox pages'],
+      },
       pages: {
         'Wikipedia:Sandbox': 'Hello',
       },
@@ -27,6 +30,7 @@ describeWikiContract(
       ],
     }),
   {
+    expectedCategories: ['Category:Tests', 'Category:Sandbox pages'],
     expectedText: 'Hello',
     pageInfo: {
       title: 'Wikipedia:Sandbox',

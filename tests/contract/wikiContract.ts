@@ -8,6 +8,7 @@ import type {
 } from '../../src/index.js';
 
 export interface WikiContractOptions {
+  expectedCategories: string[];
   expectedText: string;
   pageInfo: PageInfo;
   queryParams: WikiQueryParams;
@@ -52,6 +53,14 @@ export function describeWikiContract(
 
       await expect(wiki.page(options.title).exists()).resolves.toBe(
         options.pageInfo.exists,
+      );
+    });
+
+    it('reads page categories', async () => {
+      const wiki = createWiki();
+
+      await expect(wiki.page(options.title).categories()).resolves.toEqual(
+        options.expectedCategories,
       );
     });
 

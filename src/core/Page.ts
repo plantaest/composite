@@ -25,6 +25,11 @@ export interface Page {
   exists(): Promise<boolean>;
 
   /**
+   * Return category page titles used by this page.
+   */
+  categories(): Promise<string[]>;
+
+  /**
    * Save full page text with an optional edit summary.
    */
   save(

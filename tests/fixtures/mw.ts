@@ -1,6 +1,7 @@
 import type { MwApi } from '../../src/runtimes/mw/index.js';
 import {
   createEditResponse,
+  createPageCategoriesResponse,
   createPageInfoResponse,
   createPageTextResponse,
   createSiteInfoResponse,
@@ -46,6 +47,10 @@ export function createFakeMwApi(text = 'Hello'): FakeMwApi {
 
       if (params.prop === 'revisions') {
         return createPageTextResponse(text);
+      }
+
+      if (params.prop === 'categories') {
+        return createPageCategoriesResponse();
       }
 
       return {};

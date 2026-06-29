@@ -20,6 +20,10 @@ export function createFakeBot(text = 'Hello'): Mwn {
     }),
     Page: vi.fn(function Page(title: string) {
       return {
+        categories: vi.fn(async () => [
+          'Category:Tests',
+          'Category:Sandbox pages',
+        ]),
         text: vi.fn(async () => `${text} from ${title}`),
         save: vi.fn(async () => createEditResponse()),
       };

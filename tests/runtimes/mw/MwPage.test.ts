@@ -85,6 +85,86 @@ describe('MwPage', () => {
     });
   });
 
+  describe('Page.categories()', () => {
+    it('maps to a MediaWiki categories query', async () => {
+      const api = createFakeMwApi();
+      const wiki = Composite.from(api);
+
+      await expect(
+        wiki.page('Wikipedia:Sandbox').categories(),
+      ).resolves.toEqual(['Category:Tests', 'Category:Sandbox pages']);
+
+      expect(api.get).toHaveBeenCalledWith({
+        action: 'query',
+        prop: 'categories',
+        titles: 'Wikipedia:Sandbox',
+        cllimit: 'max',
+        formatversion: 2,
+      });
+    });
+
+    it('continues category queries until all batches are collected', async () => {
+      const api = {
+        get: vi
+          .fn()
+          .mockResolvedValueOnce({
+            continue: {
+              continue: '||',
+              clcontinue: '107092|Second',
+            },
+            query: {
+              pages: [
+                {
+                  categories: [
+                    {
+                      title: 'Category:First',
+                    },
+                  ],
+                },
+              ],
+            },
+          })
+          .mockResolvedValueOnce({
+            batchcomplete: true,
+            query: {
+              pages: [
+                {
+                  categories: [
+                    {
+                      title: 'Category:Second',
+                    },
+                  ],
+                },
+              ],
+            },
+          }),
+        postWithToken: vi.fn(),
+      };
+      const wiki = Composite.from(api as FakeMwApi);
+
+      await expect(
+        wiki.page('Wikipedia:Sandbox').categories(),
+      ).resolves.toEqual(['Category:First', 'Category:Second']);
+
+      expect(api.get).toHaveBeenNthCalledWith(1, {
+        action: 'query',
+        prop: 'categories',
+        titles: 'Wikipedia:Sandbox',
+        cllimit: 'max',
+        formatversion: 2,
+      });
+      expect(api.get).toHaveBeenNthCalledWith(2, {
+        action: 'query',
+        prop: 'categories',
+        titles: 'Wikipedia:Sandbox',
+        cllimit: 'max',
+        formatversion: 2,
+        continue: '||',
+        clcontinue: '107092|Second',
+      });
+    });
+  });
+
   describe('Page.save()', () => {
     it('maps to a csrf edit request', async () => {
       const api = createFakeMwApi();

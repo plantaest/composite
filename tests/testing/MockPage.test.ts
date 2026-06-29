@@ -79,6 +79,28 @@ describe('MockPage', () => {
     });
   });
 
+  describe('Page.categories()', () => {
+    it('returns configured categories', async () => {
+      const wiki = createMockWiki({
+        categories: {
+          'Wikipedia:Sandbox': ['Category:Tests', 'Category:Sandbox pages'],
+        },
+      });
+
+      await expect(
+        wiki.page('Wikipedia:Sandbox').categories(),
+      ).resolves.toEqual(['Category:Tests', 'Category:Sandbox pages']);
+    });
+
+    it('returns an empty array when no categories are configured', async () => {
+      const wiki = createMockWiki();
+
+      await expect(
+        wiki.page('Wikipedia:Sandbox').categories(),
+      ).resolves.toEqual([]);
+    });
+  });
+
   describe('Page.save()', () => {
     it('updates page text when saving', async () => {
       const wiki = createMockWiki({
