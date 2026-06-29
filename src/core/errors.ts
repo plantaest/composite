@@ -31,8 +31,3 @@ export class UnsupportedRuntimeError extends CompositeError {
     this.runtime = options.runtime;
   }
 }
-
-/**
- * Raised by intentionally unimplemented first-milestone placeholders.
- */
-export class NotImplementedError extends CompositeError {}

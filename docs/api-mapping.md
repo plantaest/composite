@@ -166,9 +166,9 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Lua data | `page.luaData()` | Fetch text and parse conventionally | Fetch text and parse conventionally | future | defer | unit | Risky assumptions; defer. |
 | Purge page | `page.purge()` | `action=purge` | `new bot.Page(title).purge()` or request | both | not-started | adapter | Extended. |
 | Language links | `page.languageLinks()` | `prop=langlinks` | mwn page/query equivalent | both | not-started | adapter | Translation/discovery. |
-| Categories | `page.categories()` | `prop=categories` with continuation | `new bot.Page(title).categories()` | both | tested | adapter, contract | Core relationship API. |
-| Templates | `page.templates()` | `prop=templates` | `new bot.Page(title).templates()` | both | not-started | adapter, contract | Core relationship API. |
-| Links | `page.links()` | `prop=links` | `new bot.Page(title).links()` | both | not-started | adapter, contract | Core relationship API. |
+| Categories | `page.categories()` | `prop=categories` with `cllimit=max` | `new bot.Page(title).categories()` | both | tested | adapter, contract | Core relationship API; continuation belongs to future query helpers. |
+| Templates | `page.templates()` | `prop=templates` with `tllimit=max` | `new bot.Page(title).templates()` | both | tested | adapter, contract | Core relationship API; continuation belongs to future query helpers. |
+| Links | `page.links()` | `prop=links` with `pllimit=max` | `new bot.Page(title).links()` | both | tested | adapter, contract | Core relationship API; continuation belongs to future query helpers. |
 | Backlinks | `page.backlinks()` | `list=backlinks` | `new bot.Page(title).backlinks()` | both | not-started | adapter | Extended. |
 | Embedded-in pages | `page.embeddedIn()` | `list=embeddedin` | mwn page equivalent/query | both | not-started | adapter | Extended. |
 | Subpages | `page.subpages()` | `list=allpages` with prefix / namespace rules | `new bot.Page(title).subpages()` | both | not-started | adapter | Namespace rules matter. |

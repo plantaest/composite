@@ -102,65 +102,43 @@ describe('MwPage', () => {
         formatversion: 2,
       });
     });
+  });
 
-    it('continues category queries until all batches are collected', async () => {
-      const api = {
-        get: vi
-          .fn()
-          .mockResolvedValueOnce({
-            continue: {
-              continue: '||',
-              clcontinue: '107092|Second',
-            },
-            query: {
-              pages: [
-                {
-                  categories: [
-                    {
-                      title: 'Category:First',
-                    },
-                  ],
-                },
-              ],
-            },
-          })
-          .mockResolvedValueOnce({
-            batchcomplete: true,
-            query: {
-              pages: [
-                {
-                  categories: [
-                    {
-                      title: 'Category:Second',
-                    },
-                  ],
-                },
-              ],
-            },
-          }),
-        postWithToken: vi.fn(),
-      };
-      const wiki = Composite.from(api as FakeMwApi);
+  describe('Page.templates()', () => {
+    it('maps to a MediaWiki templates query', async () => {
+      const api = createFakeMwApi();
+      const wiki = Composite.from(api);
 
-      await expect(
-        wiki.page('Wikipedia:Sandbox').categories(),
-      ).resolves.toEqual(['Category:First', 'Category:Second']);
+      await expect(wiki.page('Wikipedia:Sandbox').templates()).resolves.toEqual(
+        ['Template:Sandbox notice', 'Template:Documentation'],
+      );
 
-      expect(api.get).toHaveBeenNthCalledWith(1, {
+      expect(api.get).toHaveBeenCalledWith({
         action: 'query',
-        prop: 'categories',
+        prop: 'templates',
         titles: 'Wikipedia:Sandbox',
-        cllimit: 'max',
+        tllimit: 'max',
         formatversion: 2,
       });
-      expect(api.get).toHaveBeenNthCalledWith(2, {
+    });
+  });
+
+  describe('Page.links()', () => {
+    it('maps to a MediaWiki links query', async () => {
+      const api = createFakeMwApi();
+      const wiki = Composite.from(api);
+
+      await expect(wiki.page('Wikipedia:Sandbox').links()).resolves.toEqual([
+        'Help:Contents',
+        'Wikipedia:Sandbox/Help',
+      ]);
+
+      expect(api.get).toHaveBeenCalledWith({
         action: 'query',
-        prop: 'categories',
+        prop: 'links',
         titles: 'Wikipedia:Sandbox',
-        cllimit: 'max',
+        pllimit: 'max',
         formatversion: 2,
-        continue: '||',
-        clcontinue: '107092|Second',
       });
     });
   });

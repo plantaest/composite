@@ -72,6 +72,58 @@ export function createPageCategoriesResponse() {
   };
 }
 
+// Compact prop=templates shape observed from the MediaWiki Action API.
+export function createPageTemplatesResponse() {
+  return {
+    batchcomplete: true as const,
+    query: {
+      pages: [
+        {
+          pageid: 107092,
+          ns: 4,
+          title: 'Wikipedia:Sandbox',
+          templates: [
+            {
+              ns: 10,
+              title: 'Template:Sandbox notice',
+            },
+            {
+              ns: 10,
+              title: 'Template:Documentation',
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
+
+// Compact prop=links shape observed from the MediaWiki Action API.
+export function createPageLinksResponse() {
+  return {
+    batchcomplete: true as const,
+    query: {
+      pages: [
+        {
+          pageid: 107092,
+          ns: 4,
+          title: 'Wikipedia:Sandbox',
+          links: [
+            {
+              ns: 12,
+              title: 'Help:Contents',
+            },
+            {
+              ns: 4,
+              title: 'Wikipedia:Sandbox/Help',
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
+
 // Edit success shape observed after saving Wikipedia:Sandbox on test.wikipedia.org.
 export function createEditResponse() {
   return {

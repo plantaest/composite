@@ -1,6 +1,6 @@
 import { Mwn } from 'mwn';
 import { Composite, type MwnWiki } from '../../../src/runtimes/mwn/index.js';
-import { createFakeBot } from '../../fixtures/mwn.js';
+import { createFakeMwnBot } from '../../fixtures/mwn.js';
 
 describe('mwn Composite', () => {
   afterEach(() => {
@@ -9,7 +9,7 @@ describe('mwn Composite', () => {
 
   describe('Composite.create()', () => {
     it('creates a wiki from mwn init config', async () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
       const init = vi.spyOn(Mwn, 'init').mockResolvedValue(bot);
 
       const wiki = await Composite.create({
@@ -27,7 +27,7 @@ describe('mwn Composite', () => {
 
   describe('Composite.from()', () => {
     it('wraps an existing mwn bot', () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
 
       const wiki = Composite.from(bot, {
         apiUrl: 'https://test.wikipedia.org/w/api.php',
@@ -41,8 +41,8 @@ describe('mwn Composite', () => {
 
   describe('Composite.wikis()', () => {
     it('creates mwn wiki connections from wiki configs', async () => {
-      const testBot = createFakeBot();
-      const commonsBot = createFakeBot();
+      const testBot = createFakeMwnBot();
+      const commonsBot = createFakeMwnBot();
       const init = vi
         .spyOn(Mwn, 'init')
         .mockResolvedValueOnce(testBot)

@@ -9,6 +9,8 @@ import type {
 
 export interface WikiContractOptions {
   expectedCategories: string[];
+  expectedLinks: string[];
+  expectedTemplates: string[];
   expectedText: string;
   pageInfo: PageInfo;
   queryParams: WikiQueryParams;
@@ -61,6 +63,22 @@ export function describeWikiContract(
 
       await expect(wiki.page(options.title).categories()).resolves.toEqual(
         options.expectedCategories,
+      );
+    });
+
+    it('reads page templates', async () => {
+      const wiki = createWiki();
+
+      await expect(wiki.page(options.title).templates()).resolves.toEqual(
+        options.expectedTemplates,
+      );
+    });
+
+    it('reads page links', async () => {
+      const wiki = createWiki();
+
+      await expect(wiki.page(options.title).links()).resolves.toEqual(
+        options.expectedLinks,
       );
     });
 

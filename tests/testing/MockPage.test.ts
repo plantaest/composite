@@ -101,6 +101,52 @@ describe('MockPage', () => {
     });
   });
 
+  describe('Page.templates()', () => {
+    it('returns configured templates', async () => {
+      const wiki = createMockWiki({
+        templates: {
+          'Wikipedia:Sandbox': [
+            'Template:Sandbox notice',
+            'Template:Documentation',
+          ],
+        },
+      });
+
+      await expect(wiki.page('Wikipedia:Sandbox').templates()).resolves.toEqual(
+        ['Template:Sandbox notice', 'Template:Documentation'],
+      );
+    });
+
+    it('returns an empty array when no templates are configured', async () => {
+      const wiki = createMockWiki();
+
+      await expect(wiki.page('Wikipedia:Sandbox').templates()).resolves.toEqual(
+        [],
+      );
+    });
+  });
+
+  describe('Page.links()', () => {
+    it('returns configured links', async () => {
+      const wiki = createMockWiki({
+        links: {
+          'Wikipedia:Sandbox': ['Help:Contents', 'Wikipedia:Sandbox/Help'],
+        },
+      });
+
+      await expect(wiki.page('Wikipedia:Sandbox').links()).resolves.toEqual([
+        'Help:Contents',
+        'Wikipedia:Sandbox/Help',
+      ]);
+    });
+
+    it('returns an empty array when no links are configured', async () => {
+      const wiki = createMockWiki();
+
+      await expect(wiki.page('Wikipedia:Sandbox').links()).resolves.toEqual([]);
+    });
+  });
+
   describe('Page.save()', () => {
     it('updates page text when saving', async () => {
       const wiki = createMockWiki({

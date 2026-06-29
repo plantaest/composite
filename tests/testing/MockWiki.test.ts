@@ -8,8 +8,17 @@ describeWikiContract(
       categories: {
         'Wikipedia:Sandbox': ['Category:Tests', 'Category:Sandbox pages'],
       },
+      links: {
+        'Wikipedia:Sandbox': ['Help:Contents', 'Wikipedia:Sandbox/Help'],
+      },
       pages: {
         'Wikipedia:Sandbox': 'Hello',
+      },
+      templates: {
+        'Wikipedia:Sandbox': [
+          'Template:Sandbox notice',
+          'Template:Documentation',
+        ],
       },
       requests: [
         {
@@ -31,6 +40,8 @@ describeWikiContract(
     }),
   {
     expectedCategories: ['Category:Tests', 'Category:Sandbox pages'],
+    expectedLinks: ['Help:Contents', 'Wikipedia:Sandbox/Help'],
+    expectedTemplates: ['Template:Sandbox notice', 'Template:Documentation'],
     expectedText: 'Hello',
     pageInfo: {
       title: 'Wikipedia:Sandbox',

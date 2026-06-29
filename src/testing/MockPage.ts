@@ -11,6 +11,8 @@ export class MockPage implements Page {
     private readonly pages: Record<string, string>,
     private readonly pageInfo: Record<string, PageInfo>,
     private readonly categoriesByTitle: Record<string, string[]>,
+    private readonly templatesByTitle: Record<string, string[]>,
+    private readonly linksByTitle: Record<string, string[]>,
   ) {}
 
   title(): string {
@@ -41,6 +43,14 @@ export class MockPage implements Page {
 
   async categories(): Promise<string[]> {
     return this.categoriesByTitle[this.pageTitle] ?? [];
+  }
+
+  async templates(): Promise<string[]> {
+    return this.templatesByTitle[this.pageTitle] ?? [];
+  }
+
+  async links(): Promise<string[]> {
+    return this.linksByTitle[this.pageTitle] ?? [];
   }
 
   async save(

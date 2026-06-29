@@ -1,9 +1,19 @@
 /// <reference types="types-mediawiki" />
 import type { UnknownApiParams } from 'types-mediawiki-api';
 
+/**
+ * Minimal mw.Api surface used by Composite's frontend runtime.
+ */
 export type MwApi = Pick<mw.Api, 'get' | 'postWithToken'>;
+
+/**
+ * MediaWiki Action API params accepted by mw.Api.
+ */
 export type MwApiParams = UnknownApiParams;
 
+/**
+ * Testable subset of the MediaWiki frontend global.
+ */
 export interface MwGlobal {
   Api: new (options?: Record<string, unknown>) => MwApi;
   ForeignApi?: new (url: string, options?: Record<string, unknown>) => MwApi;
@@ -14,6 +24,9 @@ export interface MwApiOptionsConfig {
   apiUserAgent?: string;
 }
 
+/**
+ * Return the MediaWiki frontend global or fail when the runtime is unavailable.
+ */
 export function getMwGlobal(): MwGlobal {
   const mw = (globalThis as { mw?: MwGlobal }).mw;
 

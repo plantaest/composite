@@ -1,21 +1,15 @@
-import type { Mwn } from 'mwn';
 import { Composite } from '../../../src/runtimes/mwn/index.js';
-import { createEditResponse } from '../../fixtures/mediawiki.js';
-import { createFakeBot } from '../../fixtures/mwn.js';
+import { createFakeMwnBot, createFakeMwnPage } from '../../fixtures/mwn.js';
 
 describe('MwnPage', () => {
   describe('Page.text()', () => {
     it('delegates to the mwn page object', async () => {
-      const mwnPage = {
-        text: vi.fn(async () => 'Delegated text'),
-        save: vi.fn(),
-      };
-      const bot = {
-        request: vi.fn(),
-        Page: vi.fn(function Page() {
-          return mwnPage;
-        }),
-      } as unknown as Mwn;
+      const page = createFakeMwnPage({
+        methods: {
+          text: vi.fn(async () => 'Delegated text'),
+        },
+      });
+      const bot = createFakeMwnBot({ page });
       const wiki = Composite.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').text()).resolves.toBe(
@@ -23,13 +17,13 @@ describe('MwnPage', () => {
       );
 
       expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
-      expect(mwnPage.text).toHaveBeenCalledWith();
+      expect(page.text).toHaveBeenCalledWith();
     });
   });
 
   describe('Page.info()', () => {
     it('maps to an mwn request', async () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
       const wiki = Composite.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').info()).resolves.toEqual({
@@ -57,7 +51,7 @@ describe('MwnPage', () => {
 
   describe('Page.exists()', () => {
     it('maps through page info', async () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
       const wiki = Composite.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').exists()).resolves.toBe(true);
@@ -74,20 +68,8 @@ describe('MwnPage', () => {
 
   describe('Page.categories()', () => {
     it('delegates to the mwn page object', async () => {
-      const mwnPage = {
-        categories: vi.fn(async () => [
-          'Category:Tests',
-          'Category:Sandbox pages',
-        ]),
-        text: vi.fn(),
-        save: vi.fn(),
-      };
-      const bot = {
-        request: vi.fn(),
-        Page: vi.fn(function Page() {
-          return mwnPage;
-        }),
-      } as unknown as Mwn;
+      const page = createFakeMwnPage();
+      const bot = createFakeMwnBot({ page });
       const wiki = Composite.from(bot);
 
       await expect(
@@ -95,22 +77,45 @@ describe('MwnPage', () => {
       ).resolves.toEqual(['Category:Tests', 'Category:Sandbox pages']);
 
       expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
-      expect(mwnPage.categories).toHaveBeenCalledWith();
+      expect(page.categories).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('Page.templates()', () => {
+    it('delegates to the mwn page object', async () => {
+      const page = createFakeMwnPage();
+      const bot = createFakeMwnBot({ page });
+      const wiki = Composite.from(bot);
+
+      await expect(wiki.page('Wikipedia:Sandbox').templates()).resolves.toEqual(
+        ['Template:Sandbox notice', 'Template:Documentation'],
+      );
+
+      expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
+      expect(page.templates).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('Page.links()', () => {
+    it('delegates to the mwn page object', async () => {
+      const page = createFakeMwnPage();
+      const bot = createFakeMwnBot({ page });
+      const wiki = Composite.from(bot);
+
+      await expect(wiki.page('Wikipedia:Sandbox').links()).resolves.toEqual([
+        'Help:Contents',
+        'Wikipedia:Sandbox/Help',
+      ]);
+
+      expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
+      expect(page.links).toHaveBeenCalledWith();
     });
   });
 
   describe('Page.save()', () => {
     it('delegates to the mwn page object', async () => {
-      const mwnPage = {
-        text: vi.fn(),
-        save: vi.fn(async () => createEditResponse()),
-      };
-      const bot = {
-        request: vi.fn(),
-        Page: vi.fn(function Page() {
-          return mwnPage;
-        }),
-      } as unknown as Mwn;
+      const page = createFakeMwnPage();
+      const bot = createFakeMwnBot({ page });
       const wiki = Composite.from(bot);
 
       await expect(
@@ -122,22 +127,14 @@ describe('MwnPage', () => {
       });
 
       expect(bot.Page).toHaveBeenCalledWith('Wikipedia:Sandbox');
-      expect(mwnPage.save).toHaveBeenCalledWith('Updated', 'Test edit', {
+      expect(page.save).toHaveBeenCalledWith('Updated', 'Test edit', {
         minor: true,
       });
     });
 
     it('allows saving without a summary', async () => {
-      const mwnPage = {
-        text: vi.fn(),
-        save: vi.fn(async () => createEditResponse()),
-      };
-      const bot = {
-        request: vi.fn(),
-        Page: vi.fn(function Page() {
-          return mwnPage;
-        }),
-      } as unknown as Mwn;
+      const page = createFakeMwnPage();
+      const bot = createFakeMwnBot({ page });
       const wiki = Composite.from(bot);
 
       await expect(
@@ -146,7 +143,7 @@ describe('MwnPage', () => {
         title: 'Wikipedia:Sandbox',
       });
 
-      expect(mwnPage.save).toHaveBeenCalledWith('Updated', undefined, {});
+      expect(page.save).toHaveBeenCalledWith('Updated', undefined, {});
     });
   });
 });

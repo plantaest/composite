@@ -3,6 +3,8 @@ import {
   createEditResponse,
   createPageCategoriesResponse,
   createPageInfoResponse,
+  createPageLinksResponse,
+  createPageTemplatesResponse,
   createPageTextResponse,
   createSiteInfoResponse,
 } from './mediawiki.js';
@@ -51,6 +53,14 @@ export function createFakeMwApi(text = 'Hello'): FakeMwApi {
 
       if (params.prop === 'categories') {
         return createPageCategoriesResponse();
+      }
+
+      if (params.prop === 'templates') {
+        return createPageTemplatesResponse();
+      }
+
+      if (params.prop === 'links') {
+        return createPageLinksResponse();
       }
 
       return {};

@@ -3,13 +3,9 @@ import type {
   PageInfo,
   PageSaveOptions,
   PageSaveResult,
+  WikiQueryResponse,
 } from '../../core/types.js';
-import {
-  normalizePageInfo,
-  type PageInfoQueryResponse,
-} from '../../internal/mediawiki/pageInfo.js';
-import type { PageTextQueryResponse } from '../../internal/mediawiki/pageText.js';
-import { collectPageTitleList } from '../../internal/mediawiki/pageTitleList.js';
+import { normalizePageInfo } from '../../internal/mediawiki/pageInfo.js';
 import { omitUndefinedFields } from '../../internal/object.js';
 import type { MwApi, MwApiParams } from './mediawiki.js';
 
@@ -33,9 +29,11 @@ export class MwPage implements Page {
       rvprop: 'content',
       rvslots: 'main',
       formatversion: 2,
-    })) as PageTextQueryResponse;
+    })) as WikiQueryResponse;
 
-    return response.query.pages[0]?.revisions?.[0]?.slots?.main?.content ?? '';
+    return (
+      response.query?.pages?.[0]?.revisions?.[0]?.slots?.main?.content ?? ''
+    );
   }
 
   async info(): Promise<PageInfo> {
@@ -49,24 +47,57 @@ export class MwPage implements Page {
       formatversion: 2,
     });
 
-    return normalizePageInfo(this.pageTitle, response as PageInfoQueryResponse);
+    return normalizePageInfo(this.pageTitle, response as WikiQueryResponse);
   }
 
   async exists(): Promise<boolean> {
     return (await this.info()).exists;
   }
 
-  categories(): Promise<string[]> {
+  async categories(): Promise<string[]> {
     // Follows the MediaWiki Action API categories prop:
     // https://www.mediawiki.org/wiki/API:Categories
-    return collectPageTitleList(
-      async (params) => (params as MwApiParams),
-      this.pageTitle,
-      {
-        prop: 'categories',
-        limitParam: 'cllimit',
-      },
+    const response = (await this.api.get({
+      action: 'query',
+      prop: 'categories',
+      titles: this.pageTitle,
+      cllimit: 'max',
+      formatversion: 2,
+    })) as WikiQueryResponse;
+
+    return (
+      response.query?.pages?.[0]?.categories?.map((value) => value.title) ?? []
     );
+  }
+
+  async templates(): Promise<string[]> {
+    // Follows the MediaWiki Action API templates prop:
+    // https://www.mediawiki.org/wiki/API:Templates
+    const response = (await this.api.get({
+      action: 'query',
+      prop: 'templates',
+      titles: this.pageTitle,
+      tllimit: 'max',
+      formatversion: 2,
+    })) as WikiQueryResponse;
+
+    return (
+      response.query?.pages?.[0]?.templates?.map((value) => value.title) ?? []
+    );
+  }
+
+  async links(): Promise<string[]> {
+    // Follows the MediaWiki Action API links prop:
+    // https://www.mediawiki.org/wiki/API:Links
+    const response = (await this.api.get({
+      action: 'query',
+      prop: 'links',
+      titles: this.pageTitle,
+      pllimit: 'max',
+      formatversion: 2,
+    })) as WikiQueryResponse;
+
+    return response.query?.pages?.[0]?.links?.map((value) => value.title) ?? [];
   }
 
   async save(

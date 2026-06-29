@@ -1,14 +1,21 @@
 import { Composite } from '../../../src/runtimes/mwn/index.js';
 import { describeWikiContract } from '../../contract/wikiContract.js';
 import { createSiteInfoResponse } from '../../fixtures/mediawiki.js';
-import { createFakeBot } from '../../fixtures/mwn.js';
+import { createFakeMwnBot, createFakeMwnPage } from '../../fixtures/mwn.js';
 
 describeWikiContract(
   'mwn runtime',
-  () => Composite.from(createFakeBot('Hello')),
+  () =>
+    Composite.from(
+      createFakeMwnBot({
+        page: createFakeMwnPage({ text: 'Hello' }),
+      }),
+    ),
   {
     expectedCategories: ['Category:Tests', 'Category:Sandbox pages'],
-    expectedText: 'Hello from Wikipedia:Sandbox',
+    expectedLinks: ['Help:Contents', 'Wikipedia:Sandbox/Help'],
+    expectedTemplates: ['Template:Sandbox notice', 'Template:Documentation'],
+    expectedText: 'Hello',
     pageInfo: {
       title: 'Wikipedia:Sandbox',
       sourceTitle: 'Wikipedia:Sandbox',
@@ -38,7 +45,7 @@ describeWikiContract(
 describe('MwnWiki', () => {
   describe('Wiki.request()', () => {
     it('delegates to the mwn bot', async () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
       const wiki = Composite.from(bot);
       const params = {
         action: 'query',
@@ -57,7 +64,7 @@ describe('MwnWiki', () => {
 
   describe('Wiki.query()', () => {
     it('delegates to mwn request with action=query', async () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
       const wiki = Composite.from(bot);
       const params = {
         meta: 'siteinfo',
@@ -78,7 +85,7 @@ describe('MwnWiki', () => {
     });
 
     it('lets explicit action override action=query', async () => {
-      const bot = createFakeBot();
+      const bot = createFakeMwnBot();
       const wiki = Composite.from(bot);
 
       await expect(

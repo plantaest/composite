@@ -4,11 +4,9 @@ import type {
   PageInfo,
   PageSaveOptions,
   PageSaveResult,
+  WikiQueryResponse,
 } from '../../core/types.js';
-import {
-  normalizePageInfo,
-  type PageInfoQueryResponse,
-} from '../../internal/mediawiki/pageInfo.js';
+import { normalizePageInfo } from '../../internal/mediawiki/pageInfo.js';
 
 export class MwnPage implements Page {
   constructor(
@@ -33,7 +31,7 @@ export class MwnPage implements Page {
       formatversion: 2,
     });
 
-    return normalizePageInfo(this.pageTitle, response as PageInfoQueryResponse);
+    return normalizePageInfo(this.pageTitle, response as WikiQueryResponse);
   }
 
   async exists(): Promise<boolean> {
@@ -42,6 +40,14 @@ export class MwnPage implements Page {
 
   categories(): Promise<string[]> {
     return new this.bot.Page(this.pageTitle).categories();
+  }
+
+  templates(): Promise<string[]> {
+    return new this.bot.Page(this.pageTitle).templates();
+  }
+
+  links(): Promise<string[]> {
+    return new this.bot.Page(this.pageTitle).links();
   }
 
   async save(

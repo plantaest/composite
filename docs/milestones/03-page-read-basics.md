@@ -2,7 +2,7 @@
 
 This document defines the third Composite implementation milestone.
 
-Status: planned.
+Status: completed.
 
 Read this together with:
 
@@ -138,7 +138,7 @@ Runtime mapping:
 - `/mwn`: delegate to the corresponding mwn page helpers where practical.
 - `/testing`: return configured relationship arrays, or empty arrays when no relationship data is configured.
 
-These methods should not silently expose only the first MediaWiki batch. If an adapter uses a paginated API response, it must either handle continuation for this method or document a deliberate limitation before implementation.
+For this milestone, these methods use `max` limits and return one MediaWiki API batch. General continuation belongs to future `wiki.continuedQuery()` and `wiki.continuedQueryGen()` APIs.
 
 ## `/testing` API
 

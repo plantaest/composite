@@ -19,6 +19,8 @@ export interface MockWikiConfig {
   pages?: Record<string, string>;
   pageInfo?: Record<string, PageInfo>;
   categories?: Record<string, string[]>;
+  templates?: Record<string, string[]>;
+  links?: Record<string, string[]>;
   requests?: MockRequest[];
 }
 
@@ -30,12 +32,16 @@ export class MockWiki implements Wiki {
   private readonly pages: Record<string, string>;
   private readonly pageInfo: Record<string, PageInfo>;
   private readonly categories: Record<string, string[]>;
+  private readonly templates: Record<string, string[]>;
+  private readonly links: Record<string, string[]>;
   private readonly requests: MockRequest[];
 
   constructor(config: MockWikiConfig = {}) {
     this.pages = config.pages ?? {};
     this.pageInfo = config.pageInfo ?? {};
     this.categories = config.categories ?? {};
+    this.templates = config.templates ?? {};
+    this.links = config.links ?? {};
     this.requests = config.requests ?? [];
   }
 
@@ -44,7 +50,14 @@ export class MockWiki implements Wiki {
   }
 
   page(title: string): MockPage {
-    return new MockPage(title, this.pages, this.pageInfo, this.categories);
+    return new MockPage(
+      title,
+      this.pages,
+      this.pageInfo,
+      this.categories,
+      this.templates,
+      this.links,
+    );
   }
 
   async request(params: WikiRequestParams): Promise<WikiRequestResponse> {

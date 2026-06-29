@@ -30,6 +30,16 @@ export interface Page {
   categories(): Promise<string[]>;
 
   /**
+   * Return template page titles used by this page.
+   */
+  templates(): Promise<string[]>;
+
+  /**
+   * Return page titles linked from this page.
+   */
+  links(): Promise<string[]>;
+
+  /**
    * Save full page text with an optional edit summary.
    */
   save(
