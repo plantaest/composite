@@ -2,11 +2,11 @@
 
 This document is the high-level capability roadmap for Composite.
 
-It answers a different question from `runtime-support.md`:
+It answers a different question from `api-mapping.md` and `runtime-support.md`:
 
 - `capabilities.md` defines what Composite is expected to support over time.
-- `runtime-support.md` defines whether a capability is supported by the `mw` runtime, the `mwn` runtime, both, or neither.
-- `api-mapping.md` may later define the concrete adapter implementation for each API.
+- `api-mapping.md` tracks per-API runtime support, adapter mapping, implementation status, and test coverage.
+- `runtime-support.md` defines runtime support policy and labels.
 
 Composite is a runtime-aware, mwn-shaped MediaWiki SDK for TypeScript. This document should help keep the project focused on capabilities needed by Taxon Labs applications without forcing Composite to clone all of mwn.
 
@@ -42,8 +42,8 @@ Composite capabilities are grouped by domain. The groups are not implementation 
 | Wrap existing runtime client | `Composite.from(...)` | core | Wraps `mw.Api`, `mw.ForeignApi`, or an `mwn` instance. |
 | Multi-wiki manager | `Composite.wikis(config)` | core | Creates a registry of multiple `Wiki` instances for cross-wiki tools. |
 | Get wiki by ID | `wikis.get(wikiId)` | core | Returns a configured wiki instance by ID. |
-| List configured wiki IDs | `wikis.ids()` | extended | Utility for multi-wiki applications. |
-| Cross-wiki identity metadata | `wiki.id()` / `wiki.info()` | optional | Useful when tools handle several Wikimedia wikis at once. |
+| List configured wiki IDs | `wikis.ids()` | core | Utility for multi-wiki applications. |
+| Cross-wiki identity metadata | `wiki.id()` | optional | Useful when tools handle several Wikimedia wikis at once. |
 
 ---
 
@@ -132,7 +132,6 @@ Continuation is a first-class concern in MediaWiki API usage. Composite should m
 | OAuth 1.0a | runtime-specific auth module | future | Potentially useful for legacy Wikimedia workflows. |
 | OAuth 2.0 | runtime-specific auth module | extended | Important for Common Services, Sage, Akaiv, Fusion, Rosetta, and server integrations. |
 | OAuth session validation | auth helper | extended | Needed by services that need to verify current user identity. |
-| Current account identity | `wiki.currentUser()` / `wiki.userinfo()` | core | Should be easy to retrieve in both browser and server contexts. |
 | Token management | token helper / adapter responsibility | extended | Must avoid leaking runtime-specific complexity into shared app code. |
 | Logout | `wiki.logout()` | defer | Usually server-only; frontend behavior should not mimic bot logout. |
 | Permission check helper | `wiki.can(action, target?)` | future | Could be useful, but should not hide MediaWiki complexity too early. |
@@ -148,10 +147,8 @@ Continuation is a first-class concern in MediaWiki API usage. Composite should m
 | Page existence | `page.exists()` | core | Useful before edit/create flows. |
 | Page metadata | `page.info()` | core | Should include effective/source title, existence, page ID, namespace, redirects, and common page metadata where possible. |
 | Page wikitext | `page.text()` | core | First read capability. |
-| Page HTML | `page.html()` | core | Likely Parsoid-backed or parse-backed depending runtime and policy. |
 | Page JSON content | `page.json()` | extended | Needed by JSON pages and structured content utilities. |
 | Page Lua data | `page.luaData()` | future | Useful for Lua data modules, but needs careful parsing assumptions. |
-| Revision HTML | `page.revisionHtml(revisionId)` | extended | Useful for review/diff UIs. |
 | Purge page | `page.purge()` | extended | Portable and useful for cache workflows. |
 | Page language links | `page.languageLinks()` | extended | Needed by translation tools. |
 | Page categories | `page.categories()` | core | Common reading capability. |
@@ -204,26 +201,6 @@ Continuation is a first-class concern in MediaWiki API usage. Composite should m
 
 ---
 
-# Administrative operations
-
-This section repeats some editing/user capabilities from an administrative perspective. It exists because tools such as patrol clients, semi-automated bots, and admin dashboards often think in terms of admin actions rather than page/user objects.
-
-| Capability | Proposed API | Status | Notes |
-|---|---|---:|---|
-| Patrol revision | `wiki.patrol(revisionId)` / `revision.patrol()` | core | Needed by anti-vandalism and patrol tools. |
-| Rollback edit | `page.rollback(...)` / `wiki.rollback(...)` | core | Needs rights and careful error handling. |
-| Undo edit | `page.undo(...)` / `wiki.undo(...)` | core | Must define conflict and summary behavior. |
-| Move page | `page.move(...)` | extended | Editor/admin operation depending page protection. |
-| Protect page | `page.protect(...)` | extended | Admin operation. |
-| Delete page | `page.delete(...)` | extended | Admin operation. |
-| Undelete / restore page | `page.undelete(...)` / `page.restore(...)` | extended | Naming should align with mwn while remaining understandable. |
-| Block user | `user.block(...)` / `wiki.block(...)` | extended | Admin operation; API shape needs care. |
-| Unblock user | `user.unblock(...)` / `wiki.unblock(...)` | extended | Admin operation. |
-| Change revision visibility | `wiki.changeRevisionVisibility(...)` | future | Complex; defer until needed. |
-| Delete/restore file revision | file admin helper | future | Specialized Commons/file workflow. |
-
----
-
 # User, IP, and global identity
 
 | Capability | Proposed API | Status | Notes |
@@ -255,8 +232,6 @@ This section repeats some editing/user capabilities from an administrative persp
 | Watchlist | `wiki.watchlist(options?)` | extended | User-facing monitoring capability. |
 | Generic logs | `wiki.logs(options?)` | core | Useful for admin/review tools. |
 | Logs generator | `wiki.logsGen(options?)` | extended | Useful for large log queries. |
-| Page logs | `page.logs(options?)` | extended | Page-specific convenience. |
-| User logs | `user.logs(options?)` | extended | User-specific convenience. |
 | EventStreams recent changes | `wiki.eventStreams("recentchange")` / `/streams` | extended | Custom module; not primarily mwn-shaped. |
 | EventStreams typed streams | `/streams` helpers | future | Should be designed after first EventStreams use case. |
 | Stream filtering by wiki | `/streams` filters | extended | Important for Citron/Nous-like services. |
@@ -277,7 +252,6 @@ This section repeats some editing/user capabilities from an administrative persp
 | OpenSearch | `wiki.openSearch(query, options?)` | optional | Useful if frontend UX needs it. |
 | Search titles only | `wiki.searchTitles(query, options?)` | optional | Convenience API; avoid too many aliases early. |
 | Categories search/listing | `wiki.categoryMembers(title, options?)` | extended | May also be represented as `wiki.page(category).members()`. |
-| Language links lookup | `page.languageLinks()` | extended | Listed here because it often supports discovery flows. |
 
 ---
 
@@ -401,7 +375,7 @@ Implement APIs that are:
 - used by multiple Taxon Labs applications;
 - portable across `mw` and `mwn`;
 - easy to test with mocked adapters;
-- already represented in the first milestone or runtime support matrix.
+- already represented in an active milestone or `api-mapping.md`.
 
 Examples:
 
@@ -453,13 +427,13 @@ Examples:
 
 Use this file as the capability roadmap.
 
-Use `runtime-support.md` to track runtime availability.
+Use `api-mapping.md` to track per-API details such as:
 
-Use `api-mapping.md` later to define adapter implementation details such as:
-
-- Composite API name.
-- `mw` adapter implementation.
-- `mwn` adapter implementation.
-- runtime support status.
-- test status.
+- Composite API name;
+- `mw` adapter implementation;
+- `mwn` adapter implementation;
+- runtime support status;
+- test status;
 - implementation notes.
+
+Use `runtime-support.md` for runtime support policy and labels, not per-API tracking.

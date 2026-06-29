@@ -36,10 +36,10 @@ refactor/wiki-registry
 test/mw-save-adapter
 ```
 
-Codex-assisted branches may use:
+AI-assisted branches may use:
 
 ```text
-codex/<short-topic>
+ai/<short-topic>
 ```
 
 ## Commit messages
@@ -139,12 +139,12 @@ The docs have different roles:
 
 - `COMPOSITE.md`: contributor and agent working rules.
 - `docs/api-policy.md`: API naming and design policy.
-- `docs/runtime-support.md`: runtime availability matrix.
+- `docs/runtime-support.md`: runtime support policy and labels.
 - `docs/imports-and-bundling.md`: package boundary and bundle policy.
 - `docs/testing-strategy.md`: testing layers and expectations.
 - `docs/decisions/`: accepted design decisions and their rationale.
 - `docs/capabilities.md`: long-term capability roadmap.
-- `docs/api-mapping.md`: provisional runtime adapter mapping and general implementation direction.
+- `docs/api-mapping.md`: per-API runtime support, adapter mapping, implementation status, and test coverage.
 - `docs/milestones/`: active milestone scope.
 
 Roadmap docs are not implementation promises. Milestone docs define current planned scope.

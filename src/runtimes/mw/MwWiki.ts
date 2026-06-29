@@ -36,8 +36,8 @@ export class MwWiki implements Wiki {
   async query(params: WikiQueryParams): Promise<WikiQueryResponse> {
     // Match mwn's query helper: action=query is supplied by the helper.
     // Callers should use request() for non-query actions.
-    return this.request(
+    return (await this.request(
       Object.assign({ action: 'query' }, params),
-    ) as Promise<WikiQueryResponse>;
+    )) as WikiQueryResponse;
   }
 }

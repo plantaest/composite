@@ -7,8 +7,8 @@ Status: completed.
 Read this together with:
 
 - `../capabilities.md` for the long-term capability roadmap.
-- `../api-mapping.md` for provisional runtime adapter mapping.
-- `../runtime-support.md` for runtime support labels and matrix.
+- `../api-mapping.md` for per-API runtime support and adapter mapping.
+- `../runtime-support.md` for runtime support policy and labels.
 
 The goal is to add the first practical low-level API capability and the first write capability, while keeping the runtime adapter boundary small and testable.
 

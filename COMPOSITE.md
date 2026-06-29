@@ -116,11 +116,9 @@ Application code intended to work across runtimes should depend on the core `Wik
 
 Runtime-specific code should live at application boundaries.
 
-### 9. Keep implementation slices small
+### 9. Prefer small vertical slices
 
 Each milestone should define a small positive scope and avoid broad MediaWiki coverage.
-
-### 10. Prefer small vertical slices
 
 Add features one capability at a time. Each slice should include:
 
@@ -130,7 +128,7 @@ Add features one capability at a time. Each slice should include:
 - tests for adapter mapping and shared contract;
 - documentation update if public API changes.
 
-### 11. Record important decisions
+### 10. Record important decisions
 
 Use `docs/decisions/` for design choices that affect public API shape, runtime behavior, package boundaries, testing strategy, or future development direction.
 

@@ -1,13 +1,15 @@
 # Composite API Mapping
 
-This document maps planned Composite APIs to their expected runtime adapters.
+This document tracks planned Composite APIs, runtime support, adapter mapping, implementation status, and test coverage.
 
 This is a roadmap document, not a guarantee that every listed API is implemented or committed for the next milestone. Current milestone documents in `docs/milestones/` and source code are the authority for active implementation work.
+
+When a public API is added or changed, update this document instead of duplicating per-API support tables elsewhere.
 
 It should be read together with:
 
 - `capabilities.md`: capability roadmap.
-- `runtime-support.md`: runtime availability matrix.
+- `runtime-support.md`: runtime support policy and labels.
 - `api-policy.md`: API naming and design policy.
 - `imports-and-bundling.md`: package boundary and bundle-size policy.
 
@@ -17,6 +19,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Label | Meaning |
 |---|---|
+| `both` | Expected to work in both `/mw` and `/mwn`. |
 | `supported` | Expected to work in this runtime. |
 | `partial` | Expected to work with limitations. |
 | `frontend-only` | Only meaningful in the `mw` runtime. |
@@ -63,28 +66,42 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Runtime information | `wiki.runtime()` | Return `{ type: 'mw' }` | Return `{ type: 'mwn' }` | both | tested | unit, contract | Keep runtime access explicit and narrow. |
 | Current wiki | `Composite.current(config?)` | Build a wiki from current `mw.config`, `mw.user`, and `new mw.Api()` | unsupported | frontend-only | tested | adapter | Main frontend entrypoint. |
 | Connect frontend wiki | `Composite.connect(config)` | Requires `serverName` and uses `mw.ForeignApi` | unsupported | frontend-only | tested | adapter | Needed for cross-wiki frontend tools. |
-| Create mwn wiki | `Composite.create(config)` | unsupported | Initialize an mwn instance with `Mwn.init(config)` | server-only | implemented | adapter | Main server entrypoint; live behavior is not integration-tested yet. |
+| Create mwn wiki | `Composite.create(config)` | unsupported | Initialize an mwn instance with `Mwn.init(config)` | server-only | tested | adapter | Main server entrypoint; live behavior is not integration-tested yet. |
 | Wrap runtime client | `Composite.from(...)` | Wrap provided `mw.Api` or `mw.ForeignApi` | Wrap provided mwn instance | both | tested | adapter, contract | Important for tests and advanced use. |
 | Multi-wiki manager | `Composite.wikis(config)` | Build `WikiRegistry` from explicit wiki configs | Build `WikiRegistry` from explicit wiki configs | both | tested | unit, adapter | `/mw` is sync; `/mwn` is async. |
 | Get wiki by ID | `wikis.get(wikiId)` | Return configured wiki by ID | Return configured wiki by ID | both | tested | unit | Core multi-wiki API. |
 | List wiki IDs | `wikis.ids()` | Return configured IDs | Return configured IDs | both | tested | unit | Pure registry logic. |
-| Wiki identity | `wiki.id()` / `wiki.info()` | Use config and/or `mw.config` | Use config and/or site info | both | needs-design | unit | Avoid expensive site calls in simple ID accessor. |
+| Wiki identity | `wiki.id()` | Use config and/or `mw.config` | Use config and/or runtime config | both | needs-design | unit | Keep identity cheap; broader site metadata belongs in site information APIs. |
 
 ---
 
-# Low-level API, reliability, and continuation
+# Low-level API access
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
 | Request API | `wiki.request(params)` | `api.get(params)` | `bot.request(params)` | both | tested | adapter, contract | Generic GET-like Action API primitive in the second milestone. |
 | Query Action API | `wiki.query(params)` | `api.get(Object.assign({ action: 'query' }, params))` | `bot.request(Object.assign({ action: 'query' }, params))` | both | tested | adapter, contract | mwn-style helper; callers should use `request` for non-query actions. |
-| Raw request | `wiki.rawRequest(params)` | Possibly direct `mw.Api` call | `bot.rawRequest(params)` | partial/server-first | needs-design | adapter | Consider keeping as runtime escape hatch. |
+| Raw request | `wiki.rawRequest(params)` | Possibly direct `mw.Api` call | `bot.rawRequest(params)` | partial | needs-design | adapter | Consider keeping as a server-first runtime escape hatch. |
+
+---
+
+# Continuation and batch helpers
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
 | Continued query | `wiki.continuedQuery(params)` | Loop over `continue` with conservative limits | `bot.continuedQuery(params)` | partial | not-started | adapter, contract | Return shape must be decided. |
 | Continued query generator | `wiki.continuedQueryGen(params)` | Async generator over continuation | `bot.continuedQueryGen(params)` | partial | not-started | adapter, contract | Preferred for large results. |
 | Mass query | `wiki.massQuery(...)` | Split parameters and query in batches | `bot.massQuery(...)` | partial | not-started | adapter | Frontend must limit concurrency. |
 | Mass query generator | `wiki.massQueryGen(...)` | Async generator over batched calls | `bot.massQueryGen(...)` | partial | not-started | adapter | Server-first. |
-| Batch operation | `wiki.batchOperation(...)` | Controlled promise pool with low concurrency | `bot.batchOperation(...)` | partial/server-first | not-started | unit, adapter | Avoid aggressive frontend behavior. |
+| Batch operation | `wiki.batchOperation(...)` | Controlled promise pool with low concurrency | `bot.batchOperation(...)` | partial | not-started | unit, adapter | Server-first; avoid aggressive frontend behavior. |
 | Series batch operation | `wiki.seriesBatchOperation(...)` | Sequential loop | `bot.seriesBatchOperation(...)` | both | not-started | unit, adapter | Useful for strict ordering. |
+
+---
+
+# Reliability and request policy
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
 | User-Agent policy | runtime config | Set `Api-User-Agent` where possible | Set mwn user agent / request headers | both | not-started | adapter | Browser cannot set normal User-Agent. |
 | Maxlag handling | runtime config / request policy | Add `maxlag` param where appropriate; conservative retry | Delegate to mwn maxlag handling | partial | needs-design | adapter | Should not surprise frontend users. |
 | Retry policy | runtime config / request policy | Conservative retries for safe requests only | Delegate to mwn where practical | partial | needs-design | unit, adapter | Avoid hiding destructive retry behavior. |
@@ -96,7 +113,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 ---
 
-# Site, configuration, authentication, and permissions
+# Site and configuration
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
@@ -107,17 +124,31 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Tags | `wiki.getTags()` | Action API list tags | `bot.getTags()` if available or query | both | not-started | adapter | Needed for edit tags. |
 | Interwiki map | `wiki.interwikiMap()` | siteinfo interwikimap | mwn query/siteinfo | both | not-started | adapter | Extended. |
 | Wiki config | `wiki.config()` | Wrap selected `mw.config` values and/or API site config | API siteinfo/config | partial | needs-design | unit | Distinguish runtime config vs wiki config. |
+
+---
+
+# Authentication and current user
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
 | Current user info | `wiki.userinfo()` | `action=query&meta=userinfo` or `mw.user` + API | `bot.userinfo()` | both | not-started | adapter, contract | Core auth API. |
 | Current user object | `wiki.currentUser()` | Build from current username | Build from `userinfo()` | both | not-started | contract | Convenience API. |
-| User rights/groups | `user.rights()` / `user.groups()` | `userinfo` for current user; user query for others | mwn user/userinfo query | both | needs-design | adapter | Current vs arbitrary user must be clear. |
 | CSRF token | `wiki.getToken('csrf')` | `api.getToken('csrf')` / `postWithToken` | mwn token helper | both | needs-design | adapter | May stay adapter-internal first. |
 | Save option | `wiki.saveOption(name, value)` | `action=options` with token | `bot.saveOption(name, value)` | both | not-started | adapter | Important for app settings. |
 | Save options | `wiki.saveOptions(options)` | `action=options` with multiple changes | `bot.saveOptions(options)` | both | not-started | adapter | Extended. |
-| Browser session | `/mw` current session | Use current logged-in browser user | unsupported | frontend-only | implicit | adapter | No bot login in frontend. |
+| Browser session | `/mw` current session | Use current logged-in browser user | unsupported | frontend-only | tested | adapter | No bot login in frontend; covered through frontend runtime entrypoints. |
 | BotPassword login | `wiki.login(config)` | unsupported | `bot.login(...)` / mwn init flow | server-only | defer | adapter/integration | Not first milestone. |
-| OAuth 2.0 | auth helper/module | Browser/service-specific flow | Server OAuth flow / mwn or custom | partial/future | needs-design | integration | Likely separate design later. |
+| OAuth 2.0 | auth helper/module | Browser/service-specific flow | Server OAuth flow / mwn or custom | partial | needs-design | integration | Future design; likely separate module. |
 | OAuth session validation | auth helper | API/userinfo + service token validation | Service-level validation | future | needs-design | integration | Common Services/Sage/Akaiv. |
-| Logout | `wiki.logout()` | unsupported | mwn logout if needed | server-only/defer | defer | adapter | Avoid frontend logout semantics. |
+| Logout | `wiki.logout()` | unsupported | mwn logout if needed | server-only | defer | adapter | Avoid frontend logout semantics; deferred until needed. |
+
+---
+
+# Permissions
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
+| User rights/groups | `user.rights()` / `user.groups()` | `userinfo` for current user; user query for others | mwn user/userinfo query | both | needs-design | adapter | Current vs arbitrary user must be clear. |
 | Permission helper | `wiki.can(action, target?)` | Based on rights/site config/query | Based on rights/site config/query | future | needs-design | unit | Avoid overpromising MediaWiki permissions. |
 
 ---
@@ -131,10 +162,8 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Page existence | `page.exists()` | Use `page.info().exists` | Use `page.info().exists` | both | tested | adapter, contract | Convenience wrapper over normalized page metadata. |
 | Page metadata | `page.info()` | `action=query&prop=info&redirects=1` | `bot.request()` with the same query shape | both | tested | adapter, contract | Includes effective/source title, existence, page ID, namespace, redirects, and common metadata. |
 | Page wikitext | `page.text()` | `action=query&prop=revisions&rvprop=content` with slots API | `new bot.Page(title).text()` | both | tested | adapter, contract | First milestone. |
-| Page HTML | `page.html()` | Parsoid REST, `action=parse`, or selected policy | mwn parse/Parsoid/custom | both | needs-design | adapter | Keep simple high-level API. |
 | JSON content | `page.json()` | Fetch text then `JSON.parse` or contentmodel query | mwn text/read + parse | both | not-started | unit, adapter | Validate content model where possible. |
 | Lua data | `page.luaData()` | Fetch text and parse conventionally | Fetch text and parse conventionally | future | defer | unit | Risky assumptions; defer. |
-| Revision HTML | `page.revisionHtml(revisionId)` | Parse/Parsoid for old revision | mwn parse helper/custom | both | not-started | adapter | Useful for review UI. |
 | Purge page | `page.purge()` | `action=purge` | `new bot.Page(title).purge()` or request | both | not-started | adapter | Extended. |
 | Language links | `page.languageLinks()` | `prop=langlinks` | mwn page/query equivalent | both | not-started | adapter | Translation/discovery. |
 | Categories | `page.categories()` | `prop=categories` | `new bot.Page(title).categories()` | both | not-started | adapter, contract | Core relationship API. |
@@ -160,7 +189,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Revision text | `revision.text()` | `prop=revisions` by revid | mwn/query by revid | both | future | adapter | Avoid duplicating page API too much. |
 | Revision metadata | `revision.info()` | Query revision props | mwn/query | both | future | adapter | Useful for review UI. |
 | Patrol revision | `wiki.patrol(revisionId)` / `revision.patrol()` | `action=patrol` with token | mwn patrol/request | both | not-started | adapter/integration | Rights-dependent. |
-| Revision visibility | `wiki.changeRevisionVisibility(...)` | `action=revisiondelete` | mwn request/custom | both/admin | future | integration | Complex; defer. |
+| Revision visibility | `wiki.changeRevisionVisibility(...)` | `action=revisiondelete` | mwn request/custom | both | future | integration | Admin-only and complex; defer. |
 
 ---
 
@@ -183,8 +212,8 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Watch page | `page.watch()` | `action=watch` | mwn request/helper | both | not-started | adapter | Extended. |
 | Unwatch page | `page.unwatch()` | `action=watch&unwatch=1` | mwn request/helper | both | not-started | adapter | Extended. |
 | Watch status | `page.watchStatus()` | query watchlist/info props | mwn query/helper | both | future | adapter | Optional. |
-| Block user | `user.block(...)` / `wiki.block(...)` | `action=block` | mwn request/helper | both/admin | not-started | adapter/integration | API shape needs design. |
-| Unblock user | `user.unblock(...)` / `wiki.unblock(...)` | `action=unblock` | mwn request/helper | both/admin | not-started | adapter/integration | API shape needs design. |
+| Block user | `user.block(...)` / `wiki.block(...)` | `action=block` | mwn request/helper | both | not-started | adapter/integration | Admin-only; API shape needs design. |
+| Unblock user | `user.unblock(...)` / `wiki.unblock(...)` | `action=unblock` | mwn request/helper | both | not-started | adapter/integration | Admin-only; API shape needs design. |
 | MassMessage | `wiki.massMessage(...)` | Extension API/custom | mwn request/custom | future | defer | integration | Specialized; implement only when needed. |
 
 ---
@@ -209,7 +238,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 ---
 
-# Recent changes, logs, monitoring, and search
+# Recent changes, logs, and monitoring
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
@@ -218,8 +247,13 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Watchlist | `wiki.watchlist(options?)` | `list=watchlist` | mwn query/helper | both | not-started | adapter | User-facing monitoring. |
 | Generic logs | `wiki.logs(options?)` | `list=logevents` | mwn query/helper | both | not-started | adapter, contract | Core admin/review API. |
 | Logs generator | `wiki.logsGen(options?)` | Async generator over continuation | mwn continued query | partial | not-started | adapter | Extended. |
-| EventStreams | `wiki.eventStreams(...)` / `/streams` | Use EventSource/fetch-compatible stream helper | Use `wikimedia-streams` or EventSource polyfill | both/future | needs-design | adapter/integration | Not primarily mwn-shaped. |
-| Stream filters | `/streams` filters | Filter stream events client-side or upstream params | Same | both/future | needs-design | unit | Include wiki, namespace, user, bot/minor/anon, links. |
+
+---
+
+# Search and discovery
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
 | Full-text search | `wiki.search(query, options?)` | `list=search` / CirrusSearch params | `bot.search(...)` | both | not-started | adapter, contract | Core discovery API. |
 | Prefix search | `wiki.prefixSearch(query, options?)` | `list=prefixsearch` or opensearch | mwn query/helper | both | not-started | adapter | Extended. |
 | OpenSearch | `wiki.openSearch(query, options?)` | `action=opensearch` | mwn query/helper | both | future | adapter | Optional. |
@@ -227,21 +261,44 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 ---
 
-# Upload, file handling, Parsoid, Wikibase, and SPARQL
+# EventStreams
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
+| EventStreams | `wiki.eventStreams(...)` / `/streams` | Use EventSource/fetch-compatible stream helper | Use `wikimedia-streams` or EventSource polyfill | future | needs-design | adapter/integration | Expected to support both runtimes, but not primarily mwn-shaped. |
+| Stream filters | `/streams` filters | Filter stream events client-side or upstream params | Same | future | needs-design | unit | Expected to support both runtimes; include wiki, namespace, user, bot/minor/anon, links. |
+
+---
+
+# Upload and file handling
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
 | File object | `wiki.file(name)` | Return file wrapper | Return mwn-backed file wrapper | both | not-started | contract | Extended. |
 | File metadata | `file.info()` | `prop=imageinfo` | mwn file/query helper | both | not-started | adapter | Extended. |
 | File usage | `file.usage(...)` / `wiki.fileUsage(...)` | `list=imageusage` / `globalusage` if available | mwn query/custom | future | defer | adapter | Commons-related. |
-| Upload file | `wiki.upload(...)` | `action=upload`; browser file/blob behavior differs | `bot.upload(...)` | partial/server-first | not-started | adapter/integration | Needs careful runtime contract. |
-| Upload from URL | `wiki.uploadFromUrl(...)` | likely unsupported or limited | `bot.uploadFromUrl(...)` | server-first | defer | integration | Server-first. |
+| Upload file | `wiki.upload(...)` | `action=upload`; browser file/blob behavior differs | `bot.upload(...)` | partial | not-started | adapter/integration | Server-first; needs careful runtime contract. |
+| Upload from URL | `wiki.uploadFromUrl(...)` | likely unsupported or limited | `bot.uploadFromUrl(...)` | server-only | defer | integration | Server-first. |
 | Download file | `wiki.download(...)` | unsupported | `bot.download(...)` | server-only | defer | adapter | Filesystem-oriented. |
+
+---
+
+# HTML and Parsoid
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
 | Page HTML | `page.html()` | Parsoid REST or parse API | mwn parse helper / fetch Parsoid | both | needs-design | adapter, contract | Core high-level API. |
 | Revision HTML | `page.revisionHtml(revisionId)` | Parsoid/parse by revision | mwn parse/custom | both | needs-design | adapter | Review UI. |
 | Parse wikitext | `wiki.parseWikitext(text, options?)` | `action=parse` or Parsoid | `bot.parseWikitext(...)` if available / request | both | not-started | adapter | Extended. |
 | Parsoid HTML fetch | `wiki.parsoid().html(title, options?)` | REST endpoint / `mw.Rest` / fetch | fetch REST endpoint | both | future | adapter/integration | Consider `/parsoid` later. |
 | HTML to wikitext | `wiki.parsoid().toWikitext(html, options?)` | Parsoid transform endpoint | fetch Parsoid endpoint | future | defer | integration | Complex. |
+
+---
+
+# Wikibase and SPARQL
+
+| Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
+|---|---|---|---|---|---|---|---|
 | SPARQL query | `wiki.sparqlQuery(query, endpoint?)` | `fetch` to SPARQL endpoint | `bot.sparqlQuery(query, endpoint?)` | both | not-started | adapter, contract | Should exist early. |
 | Entity object | `wiki.entity(id)` | Wikibase API request/custom | mwn Wikibase/custom request | future | defer | adapter | Prefer `wikibase` naming. |
 | Read entity | `entity.get()` | `wbgetentities` | mwn/custom request | future | defer | adapter | Implement before entity editing. |
@@ -254,14 +311,14 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
-| Parse templates | `parseTemplates(text)` | Pure utility | Pure utility | both/runtime-independent | not-started | unit | Must not import runtime code. |
-| Parse links | `parseLinks(text)` | Pure utility | Pure utility | both/runtime-independent | not-started | unit | Bundle-friendly. |
-| Parse sections | `parseSections(text)` | Pure utility | Pure utility | both/runtime-independent | not-started | unit | Useful for edit/new-section helpers. |
-| Parse categories | `parseCategories(text)` | Pure utility | Pure utility | both/runtime-independent | not-started | unit | Extended. |
-| Parse tables | `parseTables(text)` | Pure utility | Pure utility | both/runtime-independent | future | unit | Complex; optional. |
-| Replace template | `replaceTemplate(text, match, replacement)` | Pure utility | Pure utility | both/runtime-independent | future | unit | Maintenance workflows. |
-| Insert template | `insertTemplate(text, template, options?)` | Pure utility | Pure utility | both/runtime-independent | future | unit | Warning/tagging workflows. |
-| Wikitext facade | `Wikitext.from(text)` | Pure facade | Pure facade | both/runtime-independent | future | unit, bundle | Pure functions remain primary. |
+| Parse templates | `parseTemplates(text)` | Pure utility | Pure utility | both | not-started | unit | Runtime-independent; must not import runtime code. |
+| Parse links | `parseLinks(text)` | Pure utility | Pure utility | both | not-started | unit | Runtime-independent and bundle-friendly. |
+| Parse sections | `parseSections(text)` | Pure utility | Pure utility | both | not-started | unit | Runtime-independent; useful for edit/new-section helpers. |
+| Parse categories | `parseCategories(text)` | Pure utility | Pure utility | both | not-started | unit | Runtime-independent; extended. |
+| Parse tables | `parseTables(text)` | Pure utility | Pure utility | both | future | unit | Runtime-independent; complex and optional. |
+| Replace template | `replaceTemplate(text, match, replacement)` | Pure utility | Pure utility | both | future | unit | Runtime-independent; useful for maintenance workflows. |
+| Insert template | `insertTemplate(text, template, options?)` | Pure utility | Pure utility | both | future | unit | Runtime-independent; useful for warning/tagging workflows. |
+| Wikitext facade | `Wikitext.from(text)` | Pure facade | Pure facade | both | future | unit, bundle | Runtime-independent; pure functions remain primary. |
 | Title object | `wiki.title(text)` / `Title` | `mw.Title` where useful, or Composite Title | mwn Title wrapper / Composite Title | both | needs-design | unit, contract | Avoid runtime dependency in root Title if possible. |
 | Normalize title | `normalizeTitle(title, options?)` | Pure or site-aware helper | Pure or site-aware helper | both | not-started | unit | Site-aware namespace handling may need `Wiki`. |
 | Namespace extraction | `title.namespace()` | Use namespace map | Use namespace map | both | not-started | unit | Full correctness needs site info. |
@@ -274,7 +331,7 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 
 ---
 
-# Implementation direction
+# Near-term direction
 
 Milestone documents in `docs/milestones/` define concrete implementation scope.
 

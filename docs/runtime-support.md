@@ -9,12 +9,15 @@ Initial runtimes:
 
 Runtime support must be explicit. Do not assume an API works everywhere.
 
+This document defines runtime support policy and labels. Per-API runtime support, adapter mapping, implementation status, and test coverage are tracked in `api-mapping.md`.
+
 ## Support labels
 
 Use these labels in documentation and implementation decisions:
 
 | Label | Meaning |
 |---|---|
+| `both` | Expected to work in both `/mw` and `/mwn`. |
 | `supported` | Expected to work in this runtime. |
 | `partial` | Works with limitations or a reduced feature set. |
 | `frontend-only` | Only meaningful in the `mw` runtime. |
@@ -22,49 +25,18 @@ Use these labels in documentation and implementation decisions:
 | `future` | Planned but not implemented yet. |
 | `unsupported` | Not supported and not planned for this runtime. |
 
-## Initial runtime matrix
+## Runtime support decisions
 
-This matrix is provisional. It should be updated as APIs are implemented.
+Every public API should have explicit runtime support recorded in `api-mapping.md`.
 
-| Capability | Proposed API | `mw` runtime | `mwn` runtime | Notes |
-|---|---|---:|---:|---|
-| Runtime info | `wiki.runtime()` | supported | supported | Must identify runtime `type`. |
-| Current wiki | `Composite.current()` | frontend-only | unsupported | Only natural inside MediaWiki frontend. |
-| Connect wiki | `Composite.connect(config)` | frontend-only | unsupported | Requires an explicit server name and `mw.ForeignApi`. |
-| Create wiki | `Composite.create(config)` | unsupported | server-only | Creates or initializes an `mwn`-backed wiki. |
-| Wrap runtime | `Composite.from(...)` | supported | supported | Wrap `mw.Api` / `mw.ForeignApi` or `mwn` instance. |
-| Multi-wiki manager | `Composite.wikis(config)` | supported | supported | May be sync in `/mw`, async in `/mwn`. |
-| Page object | `wiki.page(title)` | supported | supported | Core portable API. |
-| User object | `wiki.user(name)` | future | future | Core portable API, not first milestone. |
-| Request | `wiki.request(params)` | supported | supported | Generic GET-like Action API primitive in the second milestone. |
-| Query | `wiki.query(params)` | supported | supported | mwn-style helper that supplies `action=query` through `request()`. |
-| Page title | `page.title()` | supported | supported | First milestone. |
-| Page info | `page.info()` | supported | supported | Normalizes Action API page metadata, including title normalization and redirects. |
-| Page existence | `page.exists()` | supported | supported | Convenience wrapper over `page.info().exists`. |
-| Page text | `page.text()` | supported | supported | First milestone. |
-| Save page | `page.save(text, summary?, options?)` | supported | supported | Portable if user has rights and token/session are available. |
-| Edit transform | `page.edit(transform, config)` | future | future | Should follow mwn semantics where practical. |
-| Page history | `page.history(...)` | future | future | Portable. |
-| Page history generator | `page.historyGen(...)` | future | future | Generator semantics may differ in frontend. |
-| Categories | `page.categories()` | future | future | Planned for page read basics. |
-| Templates | `page.templates()` | future | future | Planned for page read basics. |
-| Links | `page.links()` | future | future | Planned for page read basics. |
-| Backlinks | `page.backlinks()` | future | future | Portable. |
-| Subpages | `page.subpages()` | future | future | Portable with namespace rules. |
-| Logs | `page.logs()` | future | future | Portable. |
-| Purge | `page.purge()` | future | future | Portable. |
-| Search | `wiki.search(query, options)` | future | future | Portable. |
-| SPARQL | `wiki.sparqlQuery(query, endpoint)` | future | future | May use fetch in `/mw`, delegate to mwn in `/mwn`. |
-| Upload | `wiki.upload(...)` | future | future | Frontend behavior may differ. |
-| Download | `wiki.download(...)` | unsupported | server-only | Filesystem-oriented. |
-| Login | `wiki.login(...)` | unsupported | server-only | Frontend uses current browser session. |
-| Logout | `wiki.logout(...)` | unsupported | server-only | Frontend should not emulate bot session behavior. |
-| User info | `user.info()` | future | future | Portable. |
-| User contribs | `user.contribs()` | future | future | Portable. |
-| User options | `wiki.userinfo()` / option APIs | future | future | Needs careful design. |
-| EventStreams | `wiki.eventStreams(...)` or `/streams` | future | future | Custom module; not primarily mwn-shaped. |
-| Wikitext entry point | `/wikitext` | supported | supported | Placeholder subpath exists; pure utilities are not implemented yet. |
-| Testing mock | `/testing` | supported | supported | Runtime-independent mock utilities. |
+When designing or implementing an API, decide:
+
+- whether it works in `/mw`, `/mwn`, both, or neither;
+- whether the support label is supported, partial, frontend-only, server-only, future, or unsupported;
+- whether unsupported runtime usage should throw `UnsupportedRuntimeError`;
+- whether runtime-specific access is acceptable at the application boundary.
+
+Do not duplicate per-API support matrices in this document.
 
 ## Unsupported runtime behavior
 

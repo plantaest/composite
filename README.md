@@ -49,7 +49,7 @@ For user scripts, gadgets, and frontend applications running inside MediaWiki:
 import { Composite } from '@taxonlabs/composite/mw';
 
 const wiki = Composite.current({
-  apiUserAgent: 'Composite/0.1'
+  apiUserAgent: 'Composite/0.1.0'
 });
 
 const page = wiki.page('Wikipedia:Sandbox');
@@ -66,7 +66,7 @@ import { Composite } from '@taxonlabs/composite/mw';
 const testwiki = Composite.connect({
   wikiId: 'testwiki',
   serverName: 'test.wikipedia.org',
-  apiUserAgent: 'Composite/0.1'
+  apiUserAgent: 'Composite/0.1.0'
 });
 ```
 
@@ -81,7 +81,7 @@ const wiki = await Composite.create({
   apiUrl: 'https://test.wikipedia.org/w/api.php',
   username: process.env.BOT_USERNAME,
   password: process.env.BOT_PASSWORD,
-  userAgent: 'Composite/0.1'
+  userAgent: 'Composite/0.1.0'
 });
 
 const page = wiki.page('Wikipedia:Sandbox');

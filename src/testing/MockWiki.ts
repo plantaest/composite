@@ -7,8 +7,8 @@ import type {
   WikiRequestResponse,
 } from '../core/types.js';
 import type { Wiki } from '../core/Wiki.js';
+import { matchesParams } from '../internal/testing/matchesParams.js';
 import { MockPage } from './MockPage.js';
-import { matchesParams } from './matchesParams.js';
 
 export interface MockRequest {
   match: WikiRequestParams;
@@ -55,8 +55,8 @@ export class MockWiki implements Wiki {
   async query(params: WikiQueryParams): Promise<WikiQueryResponse> {
     // Match mwn's query helper: action=query is supplied by the helper.
     // Callers should use request() for non-query actions.
-    return this.request(
+    return (await this.request(
       Object.assign({ action: 'query' }, params),
-    ) as Promise<WikiQueryResponse>;
+    )) as WikiQueryResponse;
   }
 }

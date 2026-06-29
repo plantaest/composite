@@ -26,14 +26,12 @@ This process should stay lightweight. Do not create decision records for every s
 
 ## Milestones
 
-- `milestones/01-foundation.md`: completed foundation milestone.
-- `milestones/02-query-and-save.md`: completed request, query, and save milestone.
-- `milestones/03-page-read-basics.md`: planned page read basics milestone.
+- `milestones/`: implementation milestone specs and completion records.
 
 ## Standing policy
 
 - `api-policy.md`: API naming, design, and runtime-entry policy.
-- `runtime-support.md`: runtime support labels and availability matrix.
+- `runtime-support.md`: runtime support policy and labels.
 - `imports-and-bundling.md`: package boundary and bundle policy.
 - `testing-strategy.md`: expected test layers and test boundaries.
 
@@ -44,7 +42,7 @@ This process should stay lightweight. Do not create decision records for every s
 ## Roadmap
 
 - `capabilities.md`: high-level capability roadmap.
-- `api-mapping.md`: provisional adapter mapping and general implementation direction.
+- `api-mapping.md`: per-API runtime support, adapter mapping, implementation status, and test coverage.
 
 ## Contributor guides
 

@@ -8,8 +8,8 @@ Read this together with:
 
 - `../decisions/0013-split-page-read-basics-from-broader-third-milestone.md` for the milestone scope decision.
 - `../capabilities.md` for the long-term capability roadmap.
-- `../api-mapping.md` for provisional runtime adapter mapping.
-- `../runtime-support.md` for runtime support labels and matrix.
+- `../api-mapping.md` for per-API runtime support and adapter mapping.
+- `../runtime-support.md` for runtime support policy and labels.
 
 The goal is to add common page metadata and relationship reads without starting broader discovery, revision history, or current-user APIs.
 

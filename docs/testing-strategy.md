@@ -68,7 +68,7 @@ const fakeBot = {
 
 Adapter tests should verify mapping, not live network behavior.
 
-### Browser-console reference checks
+#### Browser-console reference checks
 
 For `/mw` APIs, it is useful to check behavior directly in a MediaWiki browser console before designing the Composite wrapper.
 

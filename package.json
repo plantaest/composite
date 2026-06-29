@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Runtime-aware, mwn-shaped MediaWiki SDK for TypeScript.",
   "type": "module",
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "pnpm@11.9.0",
   "sideEffects": false,
   "exports": {
     ".": {

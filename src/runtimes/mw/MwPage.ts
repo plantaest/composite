@@ -8,7 +8,9 @@ import {
   normalizePageInfo,
   type PageInfoQueryResponse,
 } from '../../internal/mediawiki/pageInfo.js';
-import type { MwApi, MwApiParams, MwPageTextResponse } from './mediawiki.js';
+import type { PageTextQueryResponse } from '../../internal/mediawiki/pageText.js';
+import { omitUndefinedFields } from '../../internal/object.js';
+import type { MwApi, MwApiParams } from './mediawiki.js';
 
 export class MwPage implements Page {
   constructor(
@@ -30,7 +32,7 @@ export class MwPage implements Page {
       rvprop: 'content',
       rvslots: 'main',
       formatversion: 2,
-    })) as MwPageTextResponse;
+    })) as PageTextQueryResponse;
 
     return response.query.pages[0]?.revisions?.[0]?.slots?.main?.content ?? '';
   }
@@ -58,19 +60,13 @@ export class MwPage implements Page {
     summary?: string,
     options: PageSaveOptions = {},
   ): Promise<PageSaveResult> {
-    const params: MwApiParams = {
+    const params = omitUndefinedFields<MwApiParams>({
       action: 'edit',
       title: this.pageTitle,
       text,
-    };
-
-    if (summary !== undefined) {
-      params.summary = summary;
-    }
-
-    if (options.minor !== undefined) {
-      params.minor = options.minor;
-    }
+      summary,
+      minor: options.minor,
+    });
 
     // Edit params follow the MediaWiki Action API edit module:
     // https://www.mediawiki.org/wiki/API:Edit

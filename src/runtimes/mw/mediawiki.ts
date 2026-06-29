@@ -14,20 +14,6 @@ export interface MwApiOptionsConfig {
   apiUserAgent?: string;
 }
 
-export interface MwPageTextResponse {
-  query: {
-    pages: Array<{
-      revisions?: Array<{
-        slots?: {
-          main?: {
-            content?: string;
-          };
-        };
-      }>;
-    }>;
-  };
-}
-
 export function getMwGlobal(): MwGlobal {
   const mw = (globalThis as { mw?: MwGlobal }).mw;
 

@@ -1,5 +1,18 @@
-.idea
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build and test output
+dist/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Editor and OS files
+.idea/
+.junie/
 .DS_Store
-.pnpm-store
-node_modules
-dist

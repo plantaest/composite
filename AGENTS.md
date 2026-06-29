@@ -1,4 +1,4 @@
-# Codex Instructions
+# Agent Instructions
 
 Read `COMPOSITE.md` before making code or documentation changes.
 
