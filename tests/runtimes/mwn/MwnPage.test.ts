@@ -1,4 +1,4 @@
-import { Composite } from '../../../src/runtimes/mwn/index.js';
+import { MwnWiki } from '../../../src/runtimes/mwn/index.js';
 import { createFakeMwnBot, createFakeMwnPage } from '../../fixtures/mwn.js';
 
 describe('MwnPage', () => {
@@ -10,7 +10,7 @@ describe('MwnPage', () => {
         },
       });
       const bot = createFakeMwnBot({ page });
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').text()).resolves.toBe(
         'Delegated text',
@@ -24,7 +24,7 @@ describe('MwnPage', () => {
   describe('Page.info()', () => {
     it('maps to an mwn request', async () => {
       const bot = createFakeMwnBot();
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').info()).resolves.toEqual({
         title: 'Wikipedia:Sandbox',
@@ -52,7 +52,7 @@ describe('MwnPage', () => {
   describe('Page.exists()', () => {
     it('maps through page info', async () => {
       const bot = createFakeMwnBot();
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').exists()).resolves.toBe(true);
 
@@ -70,7 +70,7 @@ describe('MwnPage', () => {
     it('delegates to the mwn page object', async () => {
       const page = createFakeMwnPage();
       const bot = createFakeMwnBot({ page });
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(
         wiki.page('Wikipedia:Sandbox').categories(),
@@ -85,7 +85,7 @@ describe('MwnPage', () => {
     it('delegates to the mwn page object', async () => {
       const page = createFakeMwnPage();
       const bot = createFakeMwnBot({ page });
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').templates()).resolves.toEqual(
         ['Template:Sandbox notice', 'Template:Documentation'],
@@ -100,7 +100,7 @@ describe('MwnPage', () => {
     it('delegates to the mwn page object', async () => {
       const page = createFakeMwnPage();
       const bot = createFakeMwnBot({ page });
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(wiki.page('Wikipedia:Sandbox').links()).resolves.toEqual([
         'Help:Contents',
@@ -116,7 +116,7 @@ describe('MwnPage', () => {
     it('delegates to the mwn page object', async () => {
       const page = createFakeMwnPage();
       const bot = createFakeMwnBot({ page });
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(
         wiki.page('Wikipedia:Sandbox').save('Updated', 'Test edit', {
@@ -135,7 +135,7 @@ describe('MwnPage', () => {
     it('allows saving without a summary', async () => {
       const page = createFakeMwnPage();
       const bot = createFakeMwnBot({ page });
-      const wiki = Composite.from(bot);
+      const wiki = MwnWiki.from(bot);
 
       await expect(
         wiki.page('Wikipedia:Sandbox').save('Updated'),

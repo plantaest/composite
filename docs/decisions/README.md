@@ -49,3 +49,4 @@ What this enables, limits, or postpones.
 - `0014-make-wiki-query-a-semantic-query-helper.md`
 - `0015-use-composite-owned-page-info-normalization.md`
 - `0016-keep-per-api-tracking-in-api-mapping.md`
+- `0017-use-concrete-runtime-wiki-entry-points.md`

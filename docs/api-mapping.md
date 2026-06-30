@@ -64,11 +64,11 @@ Composite is **mwn-shaped**, but it is not a full clone of mwn. The mappings bel
 | Capability | Composite API | MW adapter | MWN adapter | Support | Status | Tests | Notes |
 |---|---|---|---|---|---|---|---|
 | Runtime information | `wiki.runtime()` | Return `{ type: 'mw' }` | Return `{ type: 'mwn' }` | both | tested | unit, contract | Keep runtime access explicit and narrow. |
-| Current wiki | `Composite.current(config?)` | Build a wiki from current `mw.config`, `mw.user`, and `new mw.Api()` | unsupported | frontend-only | tested | adapter | Main frontend entrypoint. |
-| Connect frontend wiki | `Composite.connect(config)` | Requires `serverName` and uses `mw.ForeignApi` | unsupported | frontend-only | tested | adapter | Needed for cross-wiki frontend tools. |
-| Create mwn wiki | `Composite.create(config)` | unsupported | Initialize an mwn instance with `Mwn.init(config)` | server-only | tested | adapter | Main server entrypoint; live behavior is not integration-tested yet. |
-| Wrap runtime client | `Composite.from(...)` | Wrap provided `mw.Api` or `mw.ForeignApi` | Wrap provided mwn instance | both | tested | adapter, contract | Important for tests and advanced use. |
-| Multi-wiki manager | `Composite.wikis(config)` | Build `WikiRegistry` from explicit wiki configs | Build `WikiRegistry` from explicit wiki configs | both | tested | unit, adapter | `/mw` is sync; `/mwn` is async. |
+| Current wiki | `MwWiki.create(config?)` | Build a wiki from current `mw.config`, `mw.user`, and `new mw.Api()` when `serverName` is absent | unsupported | frontend-only | tested | adapter | Main frontend entrypoint. |
+| Connect frontend wiki | `MwWiki.create(config)` | Uses `mw.ForeignApi` when `serverName` is provided | unsupported | frontend-only | tested | adapter | Needed for cross-wiki frontend tools. |
+| Create mwn wiki | `MwnWiki.create(config)` | unsupported | Initialize an mwn instance with `Mwn.init({ apiUrl })` derived from `serverName` | server-only | tested | adapter | Runtime config uses `serverName` for parity with `/mw`. |
+| Wrap runtime client | `MwWiki.from(...)` / `MwnWiki.from(...)` | Wrap provided `mw.Api` or `mw.ForeignApi` | Wrap provided mwn instance | both | tested | adapter, contract | Important for tests and advanced use. |
+| Multi-wiki registry | `MwWiki.registry(configs)` / `MwnWiki.registry(configs)` | Build `WikiRegistry` from explicit wiki configs | Build `WikiRegistry` from explicit wiki configs | both | tested | unit, adapter | `/mw` is sync; `/mwn` is async. |
 | Get wiki by ID | `wikis.get(wikiId)` | Return configured wiki by ID | Return configured wiki by ID | both | tested | unit | Core multi-wiki API. |
 | List wiki IDs | `wikis.ids()` | Return configured IDs | Return configured IDs | both | tested | unit | Pure registry logic. |
 | Wiki identity | `wiki.id()` | Use config and/or `mw.config` | Use config and/or runtime config | both | needs-design | unit | Keep identity cheap; broader site metadata belongs in site information APIs. |

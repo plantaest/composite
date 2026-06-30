@@ -67,17 +67,17 @@ import type { Wiki } from '@taxonlabs/composite';
 MediaWiki frontend runtime:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mw';
+import { MwWiki } from '@taxonlabs/composite/mw';
 
-const wiki = Composite.current(config);
+const wiki = MwWiki.create(config);
 ```
 
 Node.js / Toolforge runtime:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mwn';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 
-const wiki = await Composite.create(config);
+const wiki = await MwnWiki.create(config);
 ```
 
 ### 4. Root import must remain lightweight

@@ -35,7 +35,7 @@ Package entry points:
 The root import is intentionally lightweight:
 
 ```ts
-import type { Wiki, Page, User, Wikis } from '@taxonlabs/composite';
+import type { Wiki, Page, User, WikiRegistry } from '@taxonlabs/composite';
 import { CompositeError } from '@taxonlabs/composite';
 ```
 
@@ -46,9 +46,9 @@ Runtime-specific code must import a runtime explicitly.
 For user scripts, gadgets, and frontend applications running inside MediaWiki:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mw';
+import { MwWiki } from '@taxonlabs/composite/mw';
 
-const wiki = Composite.current({
+const wiki = MwWiki.create({
   apiUserAgent: 'Composite/0.1.0'
 });
 
@@ -58,12 +58,12 @@ const text = await page.text();
 await page.save(text, 'Testing Composite');
 ```
 
-Cross-wiki access in the frontend runtime should use an explicit connection:
+To access another wiki from the frontend runtime, create an `MwWiki` with `serverName`:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mw';
+import { MwWiki } from '@taxonlabs/composite/mw';
 
-const testwiki = Composite.connect({
+const testwiki = MwWiki.create({
   wikiId: 'testwiki',
   serverName: 'test.wikipedia.org',
   apiUserAgent: 'Composite/0.1.0'
@@ -75,10 +75,10 @@ const testwiki = Composite.connect({
 For bots, services, and server-side applications:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mwn';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 
-const wiki = await Composite.create({
-  apiUrl: 'https://test.wikipedia.org/w/api.php',
+const wiki = await MwnWiki.create({
+  serverName: 'test.wikipedia.org',
   username: process.env.BOT_USERNAME,
   password: process.env.BOT_PASSWORD,
   userAgent: 'Composite/0.1.0'
@@ -93,9 +93,9 @@ await page.save(text, 'Testing Composite');
 Composite also supports wrapping an existing `mwn` instance:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mwn';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 
-const wiki = Composite.from(bot);
+const wiki = MwnWiki.from(bot);
 ```
 
 ## Shared application code

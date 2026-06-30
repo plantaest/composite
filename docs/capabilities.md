@@ -36,11 +36,11 @@ Composite capabilities are grouped by domain. The groups are not implementation 
 | Capability | Proposed API | Status | Notes |
 |---|---|---:|---|
 | Runtime information | `wiki.runtime()` | core | Returns runtime type and controlled access to the underlying adapter. |
-| Current wiki in MediaWiki frontend | `Composite.current(config?)` | core | `/mw` only. Natural for gadgets, user scripts, and MediaWiki frontend apps. |
-| Connect to another wiki from frontend | `Composite.connect(config)` | core | `/mw` only. Requires `serverName` and `mw.ForeignApi`. |
-| Create mwn-backed wiki | `Composite.create(config)` | core | `/mwn` only. Creates or initializes an mwn-backed wiki. |
-| Wrap existing runtime client | `Composite.from(...)` | core | Wraps `mw.Api`, `mw.ForeignApi`, or an `mwn` instance. |
-| Multi-wiki manager | `Composite.wikis(config)` | core | Creates a registry of multiple `Wiki` instances for cross-wiki tools. |
+| Current wiki in MediaWiki frontend | `MwWiki.create(config?)` | core | `/mw` only. Without `serverName`, uses the current frontend wiki. |
+| Connect to another wiki from frontend | `MwWiki.create(config)` | core | `/mw` only. With `serverName`, uses `mw.ForeignApi`. |
+| Create mwn-backed wiki | `MwnWiki.create(config)` | core | `/mwn` only. Creates or initializes a mwn-backed wiki from `serverName`. |
+| Wrap existing runtime client | `MwWiki.from(...)` / `MwnWiki.from(...)` | core | Wraps `mw.Api`, `mw.ForeignApi`, or an `mwn` instance. |
+| Multi-wiki registry | `MwWiki.registry(configs)` / `MwnWiki.registry(configs)` | core | Creates a registry of multiple `Wiki` instances for cross-wiki tools. |
 | Get wiki by ID | `wikis.get(wikiId)` | core | Returns a configured wiki instance by ID. |
 | List configured wiki IDs | `wikis.ids()` | core | Utility for multi-wiki applications. |
 | Cross-wiki identity metadata | `wiki.id()` | optional | Useful when tools handle several Wikimedia wikis at once. |
@@ -380,7 +380,8 @@ Implement APIs that are:
 Examples:
 
 - `wiki.runtime()`
-- `Composite.wikis(config)`
+- `MwWiki.registry(configs)`
+- `MwnWiki.registry(configs)`
 - `wiki.page(title)`
 - `page.title()`
 - `page.text()`

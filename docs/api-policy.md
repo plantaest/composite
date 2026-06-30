@@ -73,7 +73,7 @@ Initial core interfaces:
 Wiki
 Page
 User
-Wikis
+WikiRegistry
 Runtime
 ```
 
@@ -95,16 +95,16 @@ The root package must not create runtime instances.
 MediaWiki frontend runtime:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mw';
+import { MwWiki } from '@taxonlabs/composite/mw';
 
-const currentWiki = Composite.current(config);
-const connectedWiki = Composite.connect(config);
-const wrappedWiki = Composite.from(api, config);
-const wikis = Composite.wikis({
-  wikis: {
-    testwiki: {
-      serverName: 'test.wikipedia.org'
-    }
+const currentWiki = MwWiki.create(config);
+const connectedWiki = MwWiki.create({
+  serverName: 'test.wikipedia.org'
+});
+const wrappedWiki = MwWiki.from(api, config);
+const registry = MwWiki.registry({
+  testwiki: {
+    serverName: 'test.wikipedia.org'
   }
 });
 ```
@@ -112,15 +112,13 @@ const wikis = Composite.wikis({
 Node.js / Toolforge runtime:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mwn';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 
-const wiki = await Composite.create(config);
-const wrappedWiki = Composite.from(bot, config);
-const wikis = await Composite.wikis({
-  wikis: {
-    testwiki: {
-      apiUrl: 'https://test.wikipedia.org/w/api.php'
-    }
+const wiki = await MwnWiki.create(config);
+const wrappedWiki = MwnWiki.from(bot, config);
+const registry = await MwnWiki.registry({
+  testwiki: {
+    serverName: 'test.wikipedia.org'
   }
 });
 ```
@@ -199,8 +197,7 @@ Only meaningful in MediaWiki frontend context.
 Examples:
 
 ```ts
-Composite.current()
-Composite.connect()
+MwWiki.create()
 ```
 
 ### Utility APIs

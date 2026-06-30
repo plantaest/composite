@@ -1,11 +1,11 @@
-import { Composite } from '../../../src/runtimes/mw/index.js';
+import { MwWiki } from '../../../src/runtimes/mw/index.js';
 import { createFakeMwApi, type FakeMwApi } from '../../fixtures/mw.js';
 
 describe('MwPage', () => {
   describe('Page.text()', () => {
     it('maps to a MediaWiki revisions query', async () => {
       const api = createFakeMwApi('Mapped text');
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(wiki.page('Wikipedia:Sandbox').text()).resolves.toBe(
         'Mapped text',
@@ -34,7 +34,7 @@ describe('MwPage', () => {
         })),
         postWithToken: vi.fn(),
       };
-      const wiki = Composite.from(api as FakeMwApi);
+      const wiki = MwWiki.from(api as FakeMwApi);
 
       await expect(wiki.page('Wikipedia:Sandbox').text()).resolves.toBe('');
     });
@@ -43,7 +43,7 @@ describe('MwPage', () => {
   describe('Page.info()', () => {
     it('maps to a MediaWiki info query', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(wiki.page('Wikipedia:Sandbox').info()).resolves.toEqual({
         title: 'Wikipedia:Sandbox',
@@ -71,7 +71,7 @@ describe('MwPage', () => {
   describe('Page.exists()', () => {
     it('maps through page info', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(wiki.page('Wikipedia:Sandbox').exists()).resolves.toBe(true);
 
@@ -88,7 +88,7 @@ describe('MwPage', () => {
   describe('Page.categories()', () => {
     it('maps to a MediaWiki categories query', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(
         wiki.page('Wikipedia:Sandbox').categories(),
@@ -107,7 +107,7 @@ describe('MwPage', () => {
   describe('Page.templates()', () => {
     it('maps to a MediaWiki templates query', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(wiki.page('Wikipedia:Sandbox').templates()).resolves.toEqual(
         ['Template:Sandbox notice', 'Template:Documentation'],
@@ -126,7 +126,7 @@ describe('MwPage', () => {
   describe('Page.links()', () => {
     it('maps to a MediaWiki links query', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(wiki.page('Wikipedia:Sandbox').links()).resolves.toEqual([
         'Help:Contents',
@@ -146,7 +146,7 @@ describe('MwPage', () => {
   describe('Page.save()', () => {
     it('maps to a csrf edit request', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(
         wiki.page('Wikipedia:Sandbox').save('Updated', 'Test edit', {
@@ -167,7 +167,7 @@ describe('MwPage', () => {
 
     it('omits summary when called without one', async () => {
       const api = createFakeMwApi();
-      const wiki = Composite.from(api);
+      const wiki = MwWiki.from(api);
 
       await expect(
         wiki.page('Wikipedia:Sandbox').save('Updated'),

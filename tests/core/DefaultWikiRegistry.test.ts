@@ -1,11 +1,11 @@
-import { WikiRegistry } from '../../src/index.js';
+import { DefaultWikiRegistry } from '../../src/index.js';
 import { createMockWiki } from '../../src/testing/index.js';
 
-describe('WikiRegistry', () => {
+describe('DefaultWikiRegistry', () => {
   it('stores multiple wiki instances by id', () => {
     const testwiki = createMockWiki();
     const commonswiki = createMockWiki();
-    const wikis = new WikiRegistry({
+    const wikis = new DefaultWikiRegistry({
       commonswiki,
       testwiki,
     });
@@ -17,7 +17,7 @@ describe('WikiRegistry', () => {
   });
 
   it('fails when a wiki id is unknown', () => {
-    const wikis = new WikiRegistry({
+    const wikis = new DefaultWikiRegistry({
       testwiki: createMockWiki(),
     });
 
@@ -25,7 +25,7 @@ describe('WikiRegistry', () => {
   });
 
   it('fails when no wikis are provided', () => {
-    expect(() => new WikiRegistry({})).toThrow(
+    expect(() => new DefaultWikiRegistry({})).toThrow(
       'At least one wiki is required.',
     );
   });

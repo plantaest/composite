@@ -32,7 +32,7 @@ The repository should still be structured so it can be split into packages later
 The root import must stay lightweight:
 
 ```ts
-import type { Wiki, Page, User, Wikis } from '@taxonlabs/composite';
+import type { Wiki, Page, User, WikiRegistry } from '@taxonlabs/composite';
 import { CompositeError } from '@taxonlabs/composite';
 ```
 
@@ -56,13 +56,13 @@ The root import must not export:
 MediaWiki frontend runtime:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mw';
+import { MwWiki } from '@taxonlabs/composite/mw';
 ```
 
 Node.js / Toolforge runtime:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mwn';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 ```
 
 Runtime imports must be explicit. Do not auto-detect runtime from the root package.

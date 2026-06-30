@@ -24,11 +24,11 @@ Create the smallest working Composite skeleton that demonstrates:
 The first milestone should prepare these imports:
 
 ```ts
-import type { Wiki, Page, User, Wikis } from '@taxonlabs/composite';
+import type { Wiki, Page, User, WikiRegistry } from '@taxonlabs/composite';
 import { CompositeError, UnsupportedRuntimeError } from '@taxonlabs/composite';
 
-import { Composite as MwComposite } from '@taxonlabs/composite/mw';
-import { Composite as MwnComposite } from '@taxonlabs/composite/mwn';
+import { MwWiki } from '@taxonlabs/composite/mw';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 
 import { createMockWiki } from '@taxonlabs/composite/testing';
 ```
@@ -60,7 +60,7 @@ export interface User {
   // Placeholder for future capability.
 }
 
-export interface Wikis {
+export interface WikiRegistry {
   get(wikiId: string): Wiki;
   has(wikiId: string): boolean;
   ids(): string[];
@@ -74,16 +74,16 @@ These interfaces can evolve, but the first milestone should keep them minimal.
 Implement or stub with tests:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mw';
+import { MwWiki } from '@taxonlabs/composite/mw';
 
-const currentWiki = Composite.current(config);
-const connectedWiki = Composite.connect(config);
-const wrappedWiki = Composite.from(api, config);
-const wikis = Composite.wikis({
-  wikis: {
-    testwiki: {
-      serverName: 'test.wikipedia.org'
-    }
+const currentWiki = MwWiki.create(config);
+const connectedWiki = MwWiki.create({
+  serverName: 'test.wikipedia.org'
+});
+const wrappedWiki = MwWiki.from(api, config);
+const wikis = MwWiki.registry({
+  testwiki: {
+    serverName: 'test.wikipedia.org'
   }
 });
 ```
@@ -91,7 +91,7 @@ const wikis = Composite.wikis({
 Required behavior for this milestone:
 
 ```ts
-const wiki = Composite.from(fakeApi, config);
+const wiki = MwWiki.from(fakeApi, config);
 
 wiki.runtime().type === 'mw';
 wiki.page('Wikipedia:Sandbox').title() === 'Wikipedia:Sandbox';
@@ -105,15 +105,13 @@ await wiki.page('Wikipedia:Sandbox').text();
 Implement or stub with tests:
 
 ```ts
-import { Composite } from '@taxonlabs/composite/mwn';
+import { MwnWiki } from '@taxonlabs/composite/mwn';
 
-const wiki = await Composite.create(config);
-const wrappedWiki = Composite.from(bot, config);
-const wikis = await Composite.wikis({
-  wikis: {
-    testwiki: {
-      apiUrl: 'https://test.wikipedia.org/w/api.php'
-    }
+const wiki = await MwnWiki.create(config);
+const wrappedWiki = MwnWiki.from(bot, config);
+const wikis = await MwnWiki.registry({
+  testwiki: {
+    serverName: 'test.wikipedia.org'
   }
 });
 ```
@@ -121,7 +119,7 @@ const wikis = await Composite.wikis({
 Required behavior for this milestone:
 
 ```ts
-const wiki = Composite.from(fakeBot, config);
+const wiki = MwnWiki.from(fakeBot, config);
 
 wiki.runtime().type === 'mwn';
 wiki.page('Wikipedia:Sandbox').title() === 'Wikipedia:Sandbox';
@@ -164,21 +162,19 @@ src/
     Wiki.ts
     Page.ts
     User.ts
-    Wikis.ts
     WikiRegistry.ts
+    DefaultWikiRegistry.ts
     types.ts
 
   runtimes/
     mw/
       index.ts
-      Composite.ts
       mediawiki.ts
       MwWiki.ts
       MwPage.ts
 
     mwn/
       index.ts
-      Composite.ts
       MwnWiki.ts
       MwnPage.ts
 
