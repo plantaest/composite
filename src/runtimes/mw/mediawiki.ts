@@ -20,10 +20,6 @@ export interface MwGlobal {
   config?: Pick<typeof mw.config, 'get'>;
 }
 
-export interface MwApiOptionsConfig {
-  apiUserAgent?: string;
-}
-
 /**
  * Return the MediaWiki frontend global or fail when the runtime is unavailable.
  */
@@ -37,9 +33,9 @@ export function getMwGlobal(): MwGlobal {
   return mw;
 }
 
-export function createMwApiOptions(
-  config: MwApiOptionsConfig,
-): Record<string, unknown> | undefined {
+export function createMwApiOptions(config: {
+  apiUserAgent?: string;
+}): Record<string, unknown> | undefined {
   if (config.apiUserAgent === undefined) {
     return undefined;
   }
