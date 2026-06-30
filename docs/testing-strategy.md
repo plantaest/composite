@@ -53,7 +53,7 @@ For `/mw`, use a fake `mw.Api`-like object:
 ```ts
 const fakeApi = {
   get: vi.fn(),
-  postWithToken: vi.fn()
+  postWithToken: vi.fn(),
 };
 ```
 
@@ -62,7 +62,7 @@ For `/mwn`, use a fake `mwn`-like object:
 ```ts
 const fakeBot = {
   request: vi.fn(),
-  Page: vi.fn()
+  Page: vi.fn(),
 };
 ```
 
@@ -172,8 +172,8 @@ Example usage:
 ```ts
 const wiki = createMockWiki({
   pages: {
-    'Wikipedia:Sandbox': 'Hello world'
-  }
+    'Wikipedia:Sandbox': 'Hello world',
+  },
 });
 
 const text = await wiki.page('Wikipedia:Sandbox').text();

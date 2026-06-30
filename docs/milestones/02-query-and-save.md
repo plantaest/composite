@@ -86,7 +86,7 @@ Expected behavior:
 ```ts
 const response = await wiki.request({
   action: 'parse',
-  page: 'Wikipedia:Sandbox'
+  page: 'Wikipedia:Sandbox',
 });
 ```
 
@@ -106,7 +106,7 @@ Expected behavior:
 
 ```ts
 const response = await wiki.query({
-  meta: 'siteinfo'
+  meta: 'siteinfo',
 });
 ```
 
@@ -193,23 +193,23 @@ Extend the mock wiki to support:
 ```ts
 const wiki = createMockWiki({
   pages: {
-    'Wikipedia:Sandbox': 'Hello'
+    'Wikipedia:Sandbox': 'Hello',
   },
   requests: [
     {
       match: {
         action: 'query',
-        meta: 'siteinfo'
+        meta: 'siteinfo',
       },
       response: {
         query: {
           general: {
-            sitename: 'Wikipedia'
-          }
-        }
-      }
-    }
-  ]
+            sitename: 'Wikipedia',
+          },
+        },
+      },
+    },
+  ],
 });
 ```
 

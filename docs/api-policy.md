@@ -99,13 +99,13 @@ import { MwWiki } from '@taxonlabs/composite/mw';
 
 const currentWiki = MwWiki.create(config);
 const connectedWiki = MwWiki.create({
-  serverName: 'test.wikipedia.org'
+  serverName: 'test.wikipedia.org',
 });
 const wrappedWiki = MwWiki.from(api, config);
 const registry = MwWiki.registry({
   testwiki: {
-    serverName: 'test.wikipedia.org'
-  }
+    serverName: 'test.wikipedia.org',
+  },
 });
 ```
 
@@ -118,8 +118,8 @@ const wiki = await MwnWiki.create(config);
 const wrappedWiki = MwnWiki.from(bot, config);
 const registry = await MwnWiki.registry({
   testwiki: {
-    serverName: 'test.wikipedia.org'
-  }
+    serverName: 'test.wikipedia.org',
+  },
 });
 ```
 

@@ -21,7 +21,7 @@ Callers should pass query parameters without `action`:
 
 ```ts
 await wiki.query({
-  meta: 'siteinfo'
+  meta: 'siteinfo',
 });
 ```
 

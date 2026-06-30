@@ -147,25 +147,25 @@ Extend the mock wiki without replacing the existing `pages` text map:
 ```ts
 const wiki = createMockWiki({
   pages: {
-    'Wikipedia:Sandbox': 'Hello'
+    'Wikipedia:Sandbox': 'Hello',
   },
   pageInfo: {
     'Wikipedia:Sandbox': {
       title: 'Wikipedia:Sandbox',
       pageId: 1,
       namespace: 4,
-      exists: true
-    }
+      exists: true,
+    },
   },
   categories: {
-    'Wikipedia:Sandbox': ['Category:Tests']
+    'Wikipedia:Sandbox': ['Category:Tests'],
   },
   templates: {
-    'Wikipedia:Sandbox': ['Template:Sandbox notice']
+    'Wikipedia:Sandbox': ['Template:Sandbox notice'],
   },
   links: {
-    'Wikipedia:Sandbox': ['Help:Contents']
-  }
+    'Wikipedia:Sandbox': ['Help:Contents'],
+  },
 });
 ```
 

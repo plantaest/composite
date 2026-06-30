@@ -47,7 +47,7 @@ Preferred behavior:
 ```ts
 throw new UnsupportedRuntimeError({
   api: 'wiki.download',
-  runtime: 'mw'
+  runtime: 'mw',
 });
 ```
 

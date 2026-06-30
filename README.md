@@ -49,7 +49,7 @@ For user scripts, gadgets, and frontend applications running inside MediaWiki:
 import { MwWiki } from '@taxonlabs/composite/mw';
 
 const wiki = MwWiki.create({
-  apiUserAgent: 'Composite/0.1.0'
+  apiUserAgent: 'Composite/0.1.0',
 });
 
 const page = wiki.page('Wikipedia:Sandbox');
@@ -66,7 +66,7 @@ import { MwWiki } from '@taxonlabs/composite/mw';
 const testwiki = MwWiki.create({
   wikiId: 'testwiki',
   serverName: 'test.wikipedia.org',
-  apiUserAgent: 'Composite/0.1.0'
+  apiUserAgent: 'Composite/0.1.0',
 });
 ```
 
@@ -81,7 +81,7 @@ const wiki = await MwnWiki.create({
   serverName: 'test.wikipedia.org',
   username: process.env.BOT_USERNAME,
   password: process.env.BOT_PASSWORD,
-  userAgent: 'Composite/0.1.0'
+  userAgent: 'Composite/0.1.0',
 });
 
 const page = wiki.page('Wikipedia:Sandbox');
@@ -111,7 +111,7 @@ export async function readPage(wiki: Wiki, title: string) {
 
 export async function readSiteInfo(wiki: Wiki) {
   return wiki.query({
-    meta: 'siteinfo'
+    meta: 'siteinfo',
   });
 }
 ```

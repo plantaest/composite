@@ -24,16 +24,16 @@ Composite follows a lightweight spec-driven development workflow:
 
 This process should stay lightweight. Do not create decision records for every small code change; use them when the reasoning would be useful later.
 
-## Milestones
-
-- `milestones/`: implementation milestone specs and completion records.
-
 ## Standing policy
 
 - `api-policy.md`: API naming, design, and runtime-entry policy.
 - `runtime-support.md`: runtime support policy and labels.
 - `imports-and-bundling.md`: package boundary and bundle policy.
 - `testing-strategy.md`: expected test layers and test boundaries.
+
+## Milestones
+
+- `milestones/`: implementation milestone specs and completion records.
 
 ## Decisions
 

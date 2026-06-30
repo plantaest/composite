@@ -78,13 +78,13 @@ import { MwWiki } from '@taxonlabs/composite/mw';
 
 const currentWiki = MwWiki.create(config);
 const connectedWiki = MwWiki.create({
-  serverName: 'test.wikipedia.org'
+  serverName: 'test.wikipedia.org',
 });
 const wrappedWiki = MwWiki.from(api, config);
 const wikis = MwWiki.registry({
   testwiki: {
-    serverName: 'test.wikipedia.org'
-  }
+    serverName: 'test.wikipedia.org',
+  },
 });
 ```
 
@@ -111,8 +111,8 @@ const wiki = await MwnWiki.create(config);
 const wrappedWiki = MwnWiki.from(bot, config);
 const wikis = await MwnWiki.registry({
   testwiki: {
-    serverName: 'test.wikipedia.org'
-  }
+    serverName: 'test.wikipedia.org',
+  },
 });
 ```
 
@@ -137,8 +137,8 @@ import { createMockWiki } from '@taxonlabs/composite/testing';
 
 const wiki = createMockWiki({
   pages: {
-    'Wikipedia:Sandbox': 'Hello'
-  }
+    'Wikipedia:Sandbox': 'Hello',
+  },
 });
 ```
 
